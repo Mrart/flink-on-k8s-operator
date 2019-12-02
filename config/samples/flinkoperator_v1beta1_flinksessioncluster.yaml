@@ -18,15 +18,15 @@ metadata:
   name: flinksessioncluster-sample
 spec:
   image:
-    name: flink:1.8.2
-    pullPolicy: Always
+    name: flink:1.8.1
+    pullPolicy: IfNotPresent
   jobManager:
     accessScope: Cluster
     ports:
       ui: 8081
     resources:
       limits:
-        memory: "1024Mi"
+        memory: "512Mi"
         cpu: "200m"
   taskManager:
     replicas: 1
@@ -50,4 +50,6 @@ spec:
     - name: FOO
       value: bar
   flinkProperties:
+    jobmanager.heap.size: 256m
+    taskmanager.heap.size: 256m
     taskmanager.numberOfTaskSlots: "1"
