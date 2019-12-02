@@ -161,8 +161,8 @@ You can submit jobs through a client Pod in the same cluster, for example:
 
 ```bash
 kubectl run my-job-submitter --image=flink:1.8.1 --generator=run-pod/v1 -- \
-    /opt/flink/bin/flink run -m flinksessioncluster-sample-jobmanager:8081 \
-    /opt/flink/examples/batch/WordCount.jar --input /opt/flink/README.txt
+    /root/flink/bin/flink run -m flinksessioncluster-sample-jobmanager:8081 \
+    /root/flink/examples/batch/WordCount.jar --input /opt/flink/README.txt
 ```
 
 3) **From outside the cluster**
@@ -217,7 +217,7 @@ kubectl describe flinkclusters <CLUSTER-NAME>
 ```
 
 ### Flink job
-
+FLINK_JOB_JAR_URI
 In a job cluster, the job is automatically submitted by the operator you can
 check the Flink job status and logs with
 

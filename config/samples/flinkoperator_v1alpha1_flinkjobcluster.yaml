@@ -18,13 +18,14 @@ metadata:
   name: flinkjobcluster-sample
 spec:
   image:
-    name: flink:1.8.2
+    name: sloth-test0.dg.163.org/flink/flink:1.8.2
+    pullPolicy: Always
   jobManager:
     ports:
       ui: 8081
     resources:
       limits:
-        memory: "1024Mi"
+        memory: "512Mi"
         cpu: "200m"
   taskManager:
     replicas: 2
@@ -37,5 +38,13 @@ spec:
     className: org.apache.flink.streaming.examples.wordcount.WordCount
     args: ["--input", "./README.txt"]
     parallelism: 2
+    savepointsDir: /tmp
+    autoSavepointSeconds: 30
+    cleanupPolicy:
+      afterJobSucceeds: DeleteCluster
+      afterJobFails: KeepCluster
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
+    state.checkpoints.dir: "hdfs://slothTest/user/sloth/sloth-fs-checkpoints/meta/1_7"
+    state.backend.fs.checkpointdir: "hdfs://slothTest/user/sloth/sloth-fs-checkpoints/cpk/1_7"
+    state.checkpoints.num-retained: "10"
