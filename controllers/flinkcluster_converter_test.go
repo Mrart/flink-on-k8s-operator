@@ -741,9 +741,9 @@ taskmanager.rpc.port: 6122
 			},
 		},
 		Data: map[string]string{
-			"flink-conf.yaml":          flinkConfYaml,
-			"log4j-console.properties": getLogConf()["log4j-console.properties"],
-			"logback-console.xml":      getLogConf()["logback-console.xml"],
+			"flink-conf.yaml":  flinkConfYaml,
+			"log4j.properties": getLogConf()["log4j.properties"],
+			"logback.xml":      getLogConf()["logback.xml"],
 		},
 	}
 	assert.Assert(t, desiredState.ConfigMap != nil)
