@@ -529,8 +529,8 @@ func getDesiredConfigMap(
 		flinkProps[k] = v
 	}
 	// TODO: Provide logging options: log4j-console.properties and log4j.properties
-	var log4jPropName = "log4j-console.properties"
-	var logbackXMLName = "logback-console.xml"
+	var log4jPropName = "log4j.properties"
+	var logbackXMLName = "logback.xml"
 	var configMap = &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: clusterNamespace,
@@ -925,43 +925,47 @@ func convertGCPConfig(gcpConfig *v1alpha1.GCPConfig) (*corev1.Volume, *corev1.Vo
 // TODO: Wouldn't it be better to create a file, put it in an operator image, and read from them?.
 // Provide logging profiles
 func getLogConf() map[string]string {
-	var log4jConsoleProperties = `log4j.rootLogger=INFO, console
+	var log4jProperties = `log4j.rootLogger=INFO, file
 log4j.logger.akka=INFO
 log4j.logger.org.apache.kafka=INFO
 log4j.logger.org.apache.hadoop=INFO
 log4j.logger.org.apache.zookeeper=INFO
-log4j.appender.console=org.apache.log4j.ConsoleAppender
-log4j.appender.console.layout=org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n
-log4j.logger.org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline=ERROR, console`
-	var logbackConsoleXML = `<configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+log4j.appender.file=org.apache.log4j.FileAppender
+log4j.appender.file.file=${log.file}
+log4j.appender.file.append=false
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n
+log4j.logger.org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline=ERROR, file`
+	var logbackXML = `<configuration>
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>${log.file}</file>
+        <append>false</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{60} %X{sourceThread} - %msg%n</pattern>
         </encoder>
     </appender>
     <root level="INFO">
-        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
     </root>
     <logger name="akka" level="INFO">
-        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
     </logger>
     <logger name="org.apache.kafka" level="INFO">
-        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
     </logger>
     <logger name="org.apache.hadoop" level="INFO">
-        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
     </logger>
     <logger name="org.apache.zookeeper" level="INFO">
-        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
     </logger>
     <logger name="org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline" level="ERROR">
-        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
     </logger>
 </configuration>`
 
 	return map[string]string{
-		"log4j-console.properties": log4jConsoleProperties,
-		"logback-console.xml":      logbackConsoleXML,
+		"log4j.properties": log4jProperties,
+		"logback.xml":      logbackXML,
 	}
 }
