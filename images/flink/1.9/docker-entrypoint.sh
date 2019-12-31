@@ -36,24 +36,6 @@ drop_privs_cmd() {
     fi
 }
 
-tail_log_jobmanager() {
-     while true;
-     do
-        if [[ -f $(find log -name '*jobmanager*.log' -print -quit) ]]; then
-           tail -f -n +1 /opt/flink/log/*jobmanager*.log;
-        fi;
-    done
-}
-
-tail_log_taskexecutor() {
-     while true;
-     do
-        if [[ -f $(find log -name '*taskmanager*.log' -print -quit) ]]; then
-           tail -f -n +1 /opt/flink/log/*taskmanager*.log;
-        fi;
-    done
-}
-
 # fixed log name
 sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${id}-${HOSTNAME}\"/g' $FLINK_HOME/bin/flink-daemon.sh
 
