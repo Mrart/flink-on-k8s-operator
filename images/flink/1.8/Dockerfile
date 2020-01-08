@@ -94,7 +94,9 @@ RUN set -ex; \
   wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_METRIC_LIB_URL"; \
-  chown -R sloth:sloth .;
+  chown -R sloth:sloth .;\
+  rm -f /etc/localtime;\
+  ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
 
 # Configure container
 COPY docker-entrypoint.sh /

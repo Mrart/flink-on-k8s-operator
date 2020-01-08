@@ -5,11 +5,16 @@
 Kubernetes Operator for Apache Flink is a control plane for running [Apache Flink](https://flink.apache.org/) on
 [Kubernetes](https://kubernetes.io/).
 
+## Community
+
+Ask questions, report bugs or propose feature requests [here](https://github.com/GoogleCloudPlatform/flink-on-k8s-operator/issues)
+or join our [Slack](https://app.slack.com/client/T09NY5SBT/CQYSE926R) channel.
+
 ## Project Status
 
-*Alpha*
+*Beta*
 
-The operator is under active development, backward compatibility of the APIs is not guaranteed for alpha releases.
+The operator is under active development, backward compatibility of the APIs is not guaranteed for beta releases.
 
 ## Prerequisites
 
@@ -28,20 +33,22 @@ clusters and jobs.
 
 ## Features
 
-* Support for both Flink [job cluster](config/samples/flinkoperator_v1alpha1_flinkjobcluster.yaml) and
-  [session cluster](config/samples/flinkoperator_v1alpha1_flinksessioncluster.yaml) depending on whether a job spec is
+* Support for both Flink [job cluster](config/samples/flinkoperator_v1beta1_flinkjobcluster.yaml) and
+  [session cluster](config/samples/flinkoperator_v1beta1_flinksessioncluster.yaml) depending on whether a job spec is
   provided
 * Custom Flink images
 * Flink and Hadoop configs and container environment variables
 * Init containers and sidecar containers
 * Remote job jar
+* Configurable namespace to run the operator in
+* Configurable namepsace to watch custom resources in
 * Configurable access scope for JobManager service
 * Taking savepoints periodically
 * Taking savepoints on demand
 * Restarting failed job from the latest savepoint automatically
 * Cancelling job with savepoint
 * Cleanup policy on job success and failure
-* GCP integration (service account, GCE connector, networking)
+* GCP integration (service account, GCS connector, networking)
 
 ## Installation
 
@@ -51,10 +58,10 @@ The operator is still under active development, there is no Helm chart available
 ## Documentation
 
 * [Developer Guide](docs/developer_guide.md)
-* [Custom resource definition](docs/crd.md)
+* [Custom resource definition (v1beta1)](docs/crd.md)
 * [Managing savepoints with the Flink Operator](docs/savepoints_guide.md)
 * [Using GCS connector with custom Flink images](images/flink/README.md)
-* [Using init container to download remote job jar](config/samples/flinkoperator_v1alpha1_remotejobjar.yaml)
+* [Using init container to download remote job jar](config/samples/flinkoperator_v1beta1_remotejobjar.yaml)
 * [Testing the Flink Operator with Apache Kafka](docs/kafka_test_guide.md)
 
 ## Contributing

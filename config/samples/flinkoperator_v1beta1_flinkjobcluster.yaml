@@ -1,0 +1,64 @@
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: flinkoperator.k8s.io/v1beta1
+kind: FlinkCluster
+metadata:
+  name: flinkjobcluster-sample
+  pullPolicy: Always
+spec:
+  image:
+    name: sloth-test0.dg.163.org/flink/flink:1.8.2
+  jobManager:
+    ports:
+      ui: 8081
+      rpc: 6123
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "200m"
+    volumes:
+    - name: flinkjobcluster-sample
+      emptyDir: {}
+    volumeMounts:
+    - mountPath: /opt/flink/log
+      name: flinkjobcluster-sample
+  taskManager:
+    replicas: 2
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "200m"
+    volumes:
+    - name: flinkjobcluster-sample
+      emptyDir: {}
+    volumeMounts:
+    - mountPath: /opt/flink/log
+      name: flinkjobcluster-sample
+  job:
+    jarFile: ./examples/streaming/TopSpeedWindowing.jar
+    className: org.apache.flink.streaming.examples.windowing.TopSpeedWindowing
+    parallelism: 2
+    volumes:
+    - name: flinkjobcluster-sample
+      emptyDir: {}
+    volumeMounts:
+    - mountPath: /opt/flink/log
+      name: flinkjobcluster-sample
+  flinkProperties:
+    taskmanager.numberOfTaskSlots: "1"
+#    high-availability: zookeeper
+#    high-availability.zookeeper.quorum: sloth-test0.dg.163.org:2181,sloth-test1.dg.163.org:2181,sloth-test2.dg.163.org:2181
+#    high-availability.zookeeper.storageDir: hdfs://slothTest/user/sloth/HA/
+#    high-availability.zookeeper.path.root: /sloth-flink
