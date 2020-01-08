@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: flinkoperator.k8s.io/v1beta1
+apiVersion: flinkoperator.k8s.io/v1alpha1
 kind: FlinkCluster
 metadata:
-  name: flinkjobcluster-sample
+  name: flinkjobcluster-sample-ha
 spec:
   image:
     name: sloth-test0.dg.163.org/flink/flink:1.8.2
+    pullPolicy: Always
   jobManager:
     ports:
       ui: 8081
@@ -28,11 +29,11 @@ spec:
         memory: "1024Mi"
         cpu: "200m"
     volumes:
-    - name: flinkjobcluster-sample
+    - name: flinkjobcluster-sample-ha
       emptyDir: {}
     volumeMounts:
     - mountPath: /opt/flink/log
-      name: flinkjobcluster-sample
+      name: flinkjobcluster-sample-ha
   taskManager:
     replicas: 2
     resources:
@@ -40,24 +41,30 @@ spec:
         memory: "1024Mi"
         cpu: "200m"
     volumes:
-    - name: flinkjobcluster-sample
+    - name: flinkjobcluster-sample-ha
       emptyDir: {}
     volumeMounts:
     - mountPath: /opt/flink/log
-      name: flinkjobcluster-sample
+      name: flinkjobcluster-sample-ha
   job:
     jarFile: ./examples/streaming/TopSpeedWindowing.jar
     className: org.apache.flink.streaming.examples.windowing.TopSpeedWindowing
     parallelism: 2
     volumes:
-    - name: flinkjobcluster-sample
+    - name: flinkjobcluster-sample-ha
       emptyDir: {}
     volumeMounts:
     - mountPath: /opt/flink/log
-      name: flinkjobcluster-sample
+      name: flinkjobcluster-sample-ha
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
-#    high-availability: zookeeper
-#    high-availability.zookeeper.quorum: sloth-test0.dg.163.org:2181,sloth-test1.dg.163.org:2181,sloth-test2.dg.163.org:2181
-#    high-availability.zookeeper.storageDir: hdfs://slothTest/user/sloth/HA/
-#    high-availability.zookeeper.path.root: /sloth-flink
+    high-availability: zookeeper
+    high-availability.zookeeper.quorum: sloth-test0.dg.163.org:2181,sloth-test1.dg.163.org:2181,sloth-test2.dg.163.org:2181
+    high-availability.storageDir: hdfs://slothTest/user/sloth/HA/
+    high-availability.cluster-id: "123"
+    high-availability.jobmanager.port: "6123"
+    high-availability.zookeeper.path.root: /sloth-flink-k8s
+    restart-strategy: failure-rate
+    restart-strategy.failure-rate.max-failures-per-interval: "5000"
+    restart-strategy.failure-rate.failure-rate-interval: 6 min
+    restart-strategy.failure-rate.delay: 1 s
