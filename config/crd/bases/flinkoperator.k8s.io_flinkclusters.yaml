@@ -1582,8 +1582,8 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           kind:
                             description: 'Expected values Shared: multiple blob disks
@@ -1761,9 +1761,9 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Ex. "ext4", "xfs",
-                                           "ntfs". If not provided, the empty value is passed to
-                                           the associated CSI driver which will determine the default
-                                           filesystem to apply.
+                              "ntfs". If not provided, the empty value is passed to
+                              the associated CSI driver which will determine the default
+                              filesystem to apply.
                             type: string
                           nodePublishSecretRef:
                             description: NodePublishSecretRef is a reference to the
@@ -1931,9 +1931,9 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". The default filesystem depends on FlexVolume
-                                           script.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". The default filesystem depends on FlexVolume
+                              script.
                             type: string
                           options:
                             additionalProperties:
@@ -2191,8 +2191,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           pdID:
                             description: ID that identifies Photon Controller persistent
@@ -2553,8 +2553,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Default is "xfs".
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Default is "xfs".
                             type: string
                           gateway:
                             description: The host address of the ScaleIO API Gateway.
@@ -2667,8 +2667,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           readOnly:
                             description: Defaults to false (read/write). ReadOnly
@@ -2707,8 +2707,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           storagePolicyID:
                             description: Storage Policy Based Management (SPBM) profile
@@ -2908,8 +2908,8 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           kind:
                             description: 'Expected values Shared: multiple blob disks
@@ -3087,9 +3087,9 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Ex. "ext4", "xfs",
-                                           "ntfs". If not provided, the empty value is passed to
-                                           the associated CSI driver which will determine the default
-                                           filesystem to apply.
+                              "ntfs". If not provided, the empty value is passed to
+                              the associated CSI driver which will determine the default
+                              filesystem to apply.
                             type: string
                           nodePublishSecretRef:
                             description: NodePublishSecretRef is a reference to the
@@ -3257,9 +3257,9 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". The default filesystem depends on FlexVolume
-                                           script.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". The default filesystem depends on FlexVolume
+                              script.
                             type: string
                           options:
                             additionalProperties:
@@ -3517,8 +3517,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           pdID:
                             description: ID that identifies Photon Controller persistent
@@ -3879,8 +3879,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Default is "xfs".
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Default is "xfs".
                             type: string
                           gateway:
                             description: The host address of the ScaleIO API Gateway.
@@ -3993,8 +3993,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           readOnly:
                             description: Defaults to false (read/write). ReadOnly
@@ -4033,8 +4033,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           storagePolicyID:
                             description: Storage Policy Based Management (SPBM) profile
@@ -5081,8 +5081,8 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           kind:
                             description: 'Expected values Shared: multiple blob disks
@@ -5260,9 +5260,9 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Ex. "ext4", "xfs",
-                                           "ntfs". If not provided, the empty value is passed to
-                                           the associated CSI driver which will determine the default
-                                           filesystem to apply.
+                              "ntfs". If not provided, the empty value is passed to
+                              the associated CSI driver which will determine the default
+                              filesystem to apply.
                             type: string
                           nodePublishSecretRef:
                             description: NodePublishSecretRef is a reference to the
@@ -5430,9 +5430,9 @@ spec:
                             type: string
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". The default filesystem depends on FlexVolume
-                                           script.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". The default filesystem depends on FlexVolume
+                              script.
                             type: string
                           options:
                             additionalProperties:
@@ -5690,8 +5690,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           pdID:
                             description: ID that identifies Photon Controller persistent
@@ -6052,8 +6052,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Default is "xfs".
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Default is "xfs".
                             type: string
                           gateway:
                             description: The host address of the ScaleIO API Gateway.
@@ -6166,8 +6166,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           readOnly:
                             description: Defaults to false (read/write). ReadOnly
@@ -6206,8 +6206,8 @@ spec:
                         properties:
                           fsType:
                             description: Filesystem type to mount. Must be a filesystem
-                                           type supported by the host operating system. Ex. "ext4",
-                                           "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+                              type supported by the host operating system. Ex. "ext4",
+                              "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
                             type: string
                           storagePolicyID:
                             description: Storage Policy Based Management (SPBM) profile

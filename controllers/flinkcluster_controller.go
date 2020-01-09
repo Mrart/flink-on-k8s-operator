@@ -205,7 +205,7 @@ func (handler *FlinkClusterHandler) reconcile(
 		observed:    handler.observed,
 		desired:     handler.desired,
 	}
-	result, err := reconciler.freconcile()
+	result, err := reconciler.reconcile()
 	if err != nil {
 		log.Error(err, "Failed to reconcile")
 	}
