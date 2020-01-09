@@ -37,7 +37,7 @@ drop_privs_cmd() {
 }
 
 # fixed log name
-sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${id}-${HOSTNAME}\"/g' $FLINK_HOME/bin/flink-daemon.sh
+sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${HOSTNAME}\"/g' $FLINK_HOME/bin/flink-daemon.sh
 
 if [ "$1" = "help" ]; then
     echo "Usage: $(basename "$0") (jobmanager|taskmanager|help)"
