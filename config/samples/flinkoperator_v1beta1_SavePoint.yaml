@@ -58,9 +58,9 @@ spec:
     - mountPath: /opt/flink/log
       name: consumerdata-sloth
     restartPolicy: FromSavepointOnFailure
-    savepointDir: hdfs://slothTest/user/sloth/savepoint
+    savepointsDir: hdfs://slothTest/user/sloth/savepoint
+    fromSavePoint: hdfs://slothTest/user/sloth/savepoint/savepoint-95ea29-be2abc755fb6
     allowNonRestoredState: false
-    cancelRequested: true
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
     high-availability: zookeeper

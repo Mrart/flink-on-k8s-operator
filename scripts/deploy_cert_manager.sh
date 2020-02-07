@@ -19,7 +19,7 @@ fi
 kubectl label namespace "${NAMESPACE}" certmanager.k8s.io/disable-validation=true --overwrite
 
 # Install the CustomResourceDefinitions and cert-manager itself
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v"${CERT_MANAGER_VERSION}"/cert-manager.yaml
+kubectl apply -f config/certmanager/cert-manager.yaml
 
 sleep 10
 
