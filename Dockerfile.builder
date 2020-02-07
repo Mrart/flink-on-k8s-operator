@@ -24,6 +24,7 @@ RUN curl -sL https://go.kubebuilder.io/dl/2.0.1/linux/amd64 | tar -xz -C /usr/lo
 ENV PATH=${PATH}:/usr/local/kubebuilder/bin
 
 WORKDIR /workspace/
+ENV GOPROXY=https://goproxy.io
 
 # Copy the Go Modules manifests
 COPY go.mod go.mod
