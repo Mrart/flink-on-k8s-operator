@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: kube-rbac-proxy
-        image: hub.c.163.com/combk8s/kube-rbac-proxy:v0.4.1
+        image: sloth-test0.dg.163.org/flink/kube-rbac-proxy:v0.4.0
         args:
         - "--secure-listen-address=0.0.0.0:8443"
         - "--upstream=http://127.0.0.1:8080/"

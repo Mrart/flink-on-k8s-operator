@@ -16,49 +16,35 @@ apiVersion: flinkoperator.k8s.io/v1beta1
 kind: FlinkCluster
 metadata:
   name: flinkjobcluster-sample
-  pullPolicy: Always
 spec:
   image:
     name: sloth-test0.dg.163.org/flink/flink:1.8.2
+    pullPolicy: Always
   jobManager:
     ports:
       ui: 8081
-      rpc: 6123
     resources:
       limits:
-        memory: "1024Mi"
+        memory: "512Mi"
         cpu: "200m"
-    volumes:
-    - name: flinkjobcluster-sample
-      emptyDir: {}
-    volumeMounts:
-    - mountPath: /opt/flink/log
-      name: flinkjobcluster-sample
   taskManager:
     replicas: 2
     resources:
       limits:
         memory: "1024Mi"
         cpu: "200m"
-    volumes:
-    - name: flinkjobcluster-sample
-      emptyDir: {}
-    volumeMounts:
-    - mountPath: /opt/flink/log
-      name: flinkjobcluster-sample
   job:
-    jarFile: ./examples/streaming/TopSpeedWindowing.jar
-    className: org.apache.flink.streaming.examples.windowing.TopSpeedWindowing
+    jarFile: ./examples/streaming/WordCount.jar
+    className: org.apache.flink.streaming.examples.wordcount.WordCount
+    args: ["--input", "./README.txt"]
     parallelism: 2
-    volumes:
-    - name: flinkjobcluster-sample
-      emptyDir: {}
-    volumeMounts:
-    - mountPath: /opt/flink/log
-      name: flinkjobcluster-sample
+    savepointsDir: /tmp
+    autoSavepointSeconds: 30
+    cleanupPolicy:
+      afterJobSucceeds: DeleteCluster
+      afterJobFails: KeepCluster
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
-#    high-availability: zookeeper
-#    high-availability.zookeeper.quorum: sloth-test0.dg.163.org:2181,sloth-test1.dg.163.org:2181,sloth-test2.dg.163.org:2181
-#    high-availability.zookeeper.storageDir: hdfs://slothTest/user/sloth/HA/
-#    high-availability.zookeeper.path.root: /sloth-flink
+    state.checkpoints.dir: "hdfs://slothTest/user/sloth/sloth-fs-checkpoints/meta/1_7"
+    state.backend.fs.checkpointdir: "hdfs://slothTest/user/sloth/sloth-fs-checkpoints/cpk/1_7"
+    state.checkpoints.num-retained: "10"
