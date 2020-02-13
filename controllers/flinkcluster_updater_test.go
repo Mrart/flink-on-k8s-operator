@@ -64,9 +64,10 @@ func TestIsStatusChangedTrue(t *testing.T) {
 				Name:  "my-taskmanager",
 				State: "NotReady",
 			},
-			JobManagerService: v1beta1.FlinkClusterComponentState{
+			JobManagerService: v1beta1.JobManagerServiceStatus{
 				Name:  "my-jobmanager",
 				State: "NotReady",
+				Port: 100,
 			},
 			JobManagerIngress: &v1beta1.JobManagerIngressStatus{
 				Name:  "my-jobmanager",
@@ -88,7 +89,7 @@ func TestIsStatusChangedTrue(t *testing.T) {
 				Name:  "my-taskmanager",
 				State: "Ready",
 			},
-			JobManagerService: v1beta1.FlinkClusterComponentState{
+			JobManagerService: v1beta1.JobManagerServiceStatus{
 				Name:  "my-jobmanager",
 				State: "Ready",
 			},

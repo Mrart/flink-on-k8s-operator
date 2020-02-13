@@ -111,9 +111,10 @@ FlinkCluster
       * **pullPolicy** (optional): Image pull policy.
       * **pullSecrets** (optional): Secrets for image pull.
     * **jobManager** (required): JobManager spec.
-      * **accessScope** (optional): Access scope of the JobManager service. `enum("Cluster", "VPC", "External")`.
+      * **accessScope** (optional): Access scope of the JobManager service. `enum("Cluster", "VPC", "External", "NodePort")`.
         `Cluster`: accessible from within the same cluster; `VPC`: accessible from within the same VPC; `External`:
-        accessible from the internet. Currently `VPC` and `External` are only available for GKE.
+        accessible from the internet, `NodePort`: accessible fron within the same cluster. 
+        Currently `VPC` and `External` are only available for GKE.
       * **ports** (optional): Ports that JobManager listening on.
         * **rpc** (optional): RPC port, default: 6123.
         * **blob** (optional): Blob port, default: 6124.
