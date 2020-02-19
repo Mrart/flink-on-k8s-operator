@@ -95,6 +95,10 @@ RUN set -ex; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_METRIC_LIB_URL"; \
   chown -R sloth:sloth .; \
+  chown -R sloth:sloth /tmp; \
+  chown -R sloth:sloth /mnt; \
+  chmod +x /tmp; \
+  chmod +x /tmp; \
   rm -f /etc/localtime; \
   ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
 
