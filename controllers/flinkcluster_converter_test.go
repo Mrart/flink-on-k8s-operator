@@ -35,7 +35,7 @@ import (
 
 func TestGetDesiredClusterState(t *testing.T) {
 	var controller = true
-	var blockOwnerDeletion = false
+	var blockOwnerDeletion = true
 	var parallelism int32 = 2
 	var jmRPCPort int32 = 6123
 	var jmBlobPort int32 = 6124

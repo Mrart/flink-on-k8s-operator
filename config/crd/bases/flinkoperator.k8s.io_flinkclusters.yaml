@@ -6333,7 +6333,7 @@ spec:
                       description: The name of the Kubernetes ingress resource.
                       type: string
                     port:
-                      description: The URLs of ingress.
+                      description: The port of NodePort.
                       format: int32
                       type: integer
                     state:
