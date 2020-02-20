@@ -734,7 +734,7 @@ func toOwnerReference(
 		Name:               flinkCluster.Name,
 		UID:                flinkCluster.UID,
 		Controller:         &[]bool{true}[0],
-		BlockOwnerDeletion: &[]bool{false}[0],
+		BlockOwnerDeletion: &[]bool{true}[0],
 	}
 }
 

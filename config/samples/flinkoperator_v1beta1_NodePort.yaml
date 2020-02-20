@@ -15,7 +15,9 @@
 apiVersion: flinkoperator.k8s.io/v1beta1
 kind: FlinkCluster
 metadata:
-  name: savepoint
+  name: b058f203-538f-11ea-aaa0-246e9614073c
+  annotations:
+    name: 测试*#t
 spec:
   image:
     name: hub.c.163.com/flink/flink:1.9.1
