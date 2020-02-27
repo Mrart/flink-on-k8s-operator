@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
       - name: flink-operator
-        image: flink-operator:latest
+        image: flink-operator:1.0.1
         command:      
         - /flink-operator
         args:

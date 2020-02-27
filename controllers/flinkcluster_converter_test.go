@@ -655,7 +655,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 								"/cache/de-job.jar",
 							},
 							Env: []v1.EnvVar{
-								{Name: "FLINK_JOB_FILE_URI", Value: "/cache/de-job.jar"},
+								{Name: "FLINK_JOB_FILES_URI", Value: "/cache/de-job.jar"},
 								{Name: "HADOOP_CONF_DIR", Value: "/etc/hadoop/conf"},
 								{
 									Name:  "GOOGLE_APPLICATION_CREDENTIALS",

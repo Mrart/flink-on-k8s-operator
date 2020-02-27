@@ -15,12 +15,12 @@
 apiVersion: flinkoperator.k8s.io/v1beta1
 kind: FlinkCluster
 metadata:
-  name: b058f203-538f-11ea-aaa0-246e9614073c
+  name: filepath
   annotations:
-    name: sideCar
+    name: filepath
 spec:
   image:
-    name: hub.c.163.com/flink/flink:1.9.1
+    name: hub.c.163.com/flink/flink:1.9.1.1
   jobManager:
     accessScope: NodePort
     ports:
@@ -36,6 +36,12 @@ spec:
     volumeMounts:
     - mountPath: /opt/flink/log
       name: log
+    sidecars:
+    - name: filebeat
+      image: hub.c.163.com/flink/filebeat:7.5.3.1
+      volumeMounts:
+      - mountPath: /opt/flink/log
+        name: log
   taskManager:
     replicas: 2
     resources:
@@ -56,13 +62,11 @@ spec:
           name: log
   job:
     jarFile: hdfs://slothTest/sloth/kafkaDemo19-1.0-SNAPSHOT.jar
+    filePath: ["hdfs://slothTest/sloth/sloth/RESOURCE/dirid_100162/fastjson-1.2.51/1573731183396/fastjson-1.2.51.jar"]
     className: com.netease.java.KafkaExample
     args: ["--input-topic", "k8s-test-data","--bootstrap.servers","10.194.106.141:9094,10.194.106.6:9094,10.194.106.3:9094",
            "--group.id","produce-data-1","--output-topic", "k8s-test-output"]
     parallelism: 2
-    volumeMounts:
-    - mountPath: /opt/flink/log
-      name: consumerdata-sloth
     restartPolicy: FromSavepointOnFailure
     savepointsDir: hdfs://slothTest/user/sloth/savepoint
     fromSavePoint: hdfs://slothTest/user/sloth/savepoint/savepoint-95ea29-be2abc755fb6

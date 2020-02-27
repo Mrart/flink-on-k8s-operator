@@ -635,14 +635,14 @@ func getDesiredJob(
 		jobArgs = append(jobArgs, localFile)
 
 		if len(filePath) > 0 {
-			filePath = filePath + "," + localFile
+			filePath = filePath + "," + file
 		} else {
-			filePath = localFile
+			filePath = file
 		}
 	}
 
 	envVars = append(envVars, corev1.EnvVar{
-		Name:  "FLINK_JOB_FILE_URI",
+		Name:  "FLINK_JOB_FILES_URI",
 		Value: filePath,
 	})
 

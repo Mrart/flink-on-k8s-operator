@@ -243,7 +243,7 @@ type JobSpec struct {
 	ClassName *string `json:"className,omitempty"`
 
 	//Adds a URL to each user code classloader  on all nodes in the cluster
-	FilePath []string `json:"filePath ,omitempty"`
+	FilePath []string `json:"filePath,omitempty"`
 
 	// Args of the job.
 	Args []string `json:"args,omitempty"`
