@@ -619,8 +619,32 @@ func getDesiredJob(
 			Value: jobSpec.JarFile,
 		})
 	}
+
 	jobArgs = append(jobArgs, jarPath)
 	jobArgs = append(jobArgs, jobSpec.Args...)
+
+	var filePath string;
+	//filePath = jobSpec.FilePath;
+	for _,  file := range jobSpec.FilePath {
+		var localFile = file
+		if strings.Contains(file, "://") {
+			var parts = strings.Split(file, "/")
+			localFile = "/opt/flink/job/" + parts[len(parts)-1]
+		}
+		jobArgs = append(jobArgs, "--classpath")
+		jobArgs = append(jobArgs, localFile)
+
+		if len(filePath) > 0 {
+			filePath = filePath + "," + localFile
+		} else {
+			filePath = localFile
+		}
+	}
+
+	envVars = append(envVars, corev1.EnvVar{
+		Name:  "FLINK_JOB_FILE_URI",
+		Value: filePath,
+	})
 
 	var volumes []corev1.Volume
 	var volumeMounts []corev1.VolumeMount

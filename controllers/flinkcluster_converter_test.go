@@ -88,6 +88,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 			Image: v1beta1.ImageSpec{Name: "flink:1.8.1"},
 			Job: &v1beta1.JobSpec{
 				Args:          []string{"--input", "./README.txt"},
+				FilePath:      []string{"/cache/de-job.jar"},
 				ClassName:     &className,
 				JarFile:       "/cache/my-job.jar",
 				Parallelism:   &parallelism,
@@ -650,8 +651,11 @@ func TestGetDesiredClusterState(t *testing.T) {
 								"/cache/my-job.jar",
 								"--input",
 								"./README.txt",
+								"--classpath",
+								"/cache/de-job.jar",
 							},
 							Env: []v1.EnvVar{
+								{Name: "FLINK_JOB_FILE_URI", Value: "/cache/de-job.jar"},
 								{Name: "HADOOP_CONF_DIR", Value: "/etc/hadoop/conf"},
 								{
 									Name:  "GOOGLE_APPLICATION_CREDENTIALS",
