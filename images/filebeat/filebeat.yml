@@ -28,7 +28,8 @@ filebeat.inputs:
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
   #- /home/sloth/hadoop/yarn/logs/application_*/container_*/*.log.debug
-   - /opt/flink/log/*.log
+   - /opt/flink/log/*/*.log
+   - /opt/flink/log/*/*.err
 #  - /home/sloth/hadoop/yarn/logs/application_*/container_*/*.log
 #  - /home/sloth/hadoop/yarn/logs/application_*/container_*/*.err
 #  - /home/sloth/hadoop/yarn/logs/application_*/container_*/*.log.error
