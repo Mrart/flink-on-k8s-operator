@@ -247,7 +247,7 @@ func (updater *ClusterStatusUpdater) deriveClusterStatus(
 			v1beta1.JobManagerServiceStatus{
 				Name:  observedJmService.ObjectMeta.Name,
 				State: state,
-				Port: nodePort,
+				Port:  nodePort,
 			}
 	} else if recorded.Components.JobManagerService.Name != "" {
 		status.Components.JobManagerService =

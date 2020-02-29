@@ -191,7 +191,7 @@ func getDesiredJobManagerDeployment(
 	containers = append(containers, jobManagerSpec.Sidecars...)
 
 	var podSpec = corev1.PodSpec{
-		Containers: containers,
+		Containers:       containers,
 		Volumes:          volumes,
 		NodeSelector:     jobManagerSpec.NodeSelector,
 		ImagePullSecrets: imageSpec.PullSecrets,
@@ -548,6 +548,7 @@ func getDesiredConfigMap(
 			"flink-conf.yaml": getFlinkProperties(flinkProps),
 			log4jPropName:     getLogConf()[log4jPropName],
 			logbackXMLName:    getLogConf()[logbackXMLName],
+			"submit-job.sh":   submitJobScript,
 		},
 	}
 
@@ -580,7 +581,7 @@ func getDesiredJob(
 		"cluster": clusterName,
 		"app":     "flink",
 	}
-	var jobArgs = []string{"/opt/flink/bin/flink", "run"}
+	var jobArgs = []string{"bash", "/opt/flink-operator/submit-job.sh"}
 	jobArgs = append(jobArgs, "--jobmanager", jobManagerAddress)
 	if jobSpec.ClassName != nil {
 		jobArgs = append(jobArgs, "--class", *jobSpec.ClassName)
@@ -605,6 +606,8 @@ func getDesiredJob(
 		jobArgs = append(jobArgs, "--sysoutLogging")
 	}
 
+	jobArgs = append(jobArgs, "--detached")
+
 	var envVars = []corev1.EnvVar{}
 
 	// If the JAR file is remote, put the URI in the env variable
@@ -623,9 +626,9 @@ func getDesiredJob(
 	jobArgs = append(jobArgs, jarPath)
 	jobArgs = append(jobArgs, jobSpec.Args...)
 
-	var filePath string;
+	var filePath string
 	//filePath = jobSpec.FilePath;
-	for _,  file := range jobSpec.FilePath {
+	for _, file := range jobSpec.FilePath {
 		var localFile = file
 		if strings.Contains(file, "://") {
 			var parts = strings.Split(file, "/")
@@ -650,6 +653,13 @@ func getDesiredJob(
 	var volumeMounts []corev1.VolumeMount
 	volumes = append(volumes, jobSpec.Volumes...)
 	volumeMounts = append(volumeMounts, jobSpec.VolumeMounts...)
+
+	// Submit job script config.
+	var sbsVolume *corev1.Volume
+	var sbsMount *corev1.VolumeMount
+	sbsVolume, sbsMount = convertSubmitJobScript(clusterName)
+	volumes = append(volumes, *sbsVolume)
+	volumeMounts = append(volumeMounts, *sbsMount)
 
 	// Hadoop config.
 	var hcVolume, hcMount, hcEnv = convertHadoopConfig(clusterSpec.HadoopConfig)
@@ -890,6 +900,27 @@ func convertFlinkConfig(clusterName string) (*corev1.Volume, *corev1.VolumeMount
 	confMount = &corev1.VolumeMount{
 		Name:      flinkConfigMapVolume,
 		MountPath: flinkConfigMapPath,
+	}
+	return confVol, confMount
+}
+
+func convertSubmitJobScript(clusterName string) (*corev1.Volume, *corev1.VolumeMount) {
+	var confVol *corev1.Volume
+	var confMount *corev1.VolumeMount
+	confVol = &corev1.Volume{
+		Name: flinkConfigMapVolume,
+		VolumeSource: corev1.VolumeSource{
+			ConfigMap: &corev1.ConfigMapVolumeSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: getConfigMapName(clusterName),
+				},
+			},
+		},
+	}
+	confMount = &corev1.VolumeMount{
+		Name:      flinkConfigMapVolume,
+		MountPath: "/opt/flink-operator/submit-job.sh",
+		SubPath:   "submit-job.sh",
 	}
 	return confVol, confMount
 }

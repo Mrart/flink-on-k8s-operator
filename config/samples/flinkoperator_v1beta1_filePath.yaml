@@ -20,7 +20,8 @@ metadata:
     name: filepath
 spec:
   image:
-    name: hub.c.163.com/flink/flink:1.9.1.1
+    name: hub.c.163.com/flink/flink:1.9.1.7
+    pullPolicy: IfNotPresent
   jobManager:
     accessScope: NodePort
     ports:
@@ -29,7 +30,7 @@ spec:
     resources:
       limits:
         memory: "1024Mi"
-        cpu: "200m"
+        cpu: "500m"
     volumes:
     - name: log
       emptyDir: {}
@@ -47,7 +48,7 @@ spec:
     resources:
       limits:
         memory: "1024Mi"
-        cpu: "200m"
+        cpu: "500m"
     volumes:
     - name: log
       emptyDir: {}
@@ -60,6 +61,9 @@ spec:
         volumeMounts:
         - mountPath: /opt/flink/log
           name: log
+  envVars:
+    - name: UUID
+      value: 95ea29-be2abc755fb6
   job:
     jarFile: hdfs://slothTest/sloth/kafkaDemo19-1.0-SNAPSHOT.jar
     filePath: ["hdfs://slothTest/sloth/sloth/RESOURCE/dirid_100162/fastjson-1.2.51/1573731183396/fastjson-1.2.51.jar"]
