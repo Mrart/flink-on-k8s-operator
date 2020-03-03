@@ -632,7 +632,7 @@ func getDesiredJob(
 		var localFile = file
 		if strings.Contains(file, "://") {
 			var parts = strings.Split(file, "/")
-			localFile = "/opt/flink/job/" + parts[len(parts)-1]
+			localFile = "file:///opt/flink/lib/" + parts[len(parts)-1]
 		}
 		jobArgs = append(jobArgs, "--classpath")
 		jobArgs = append(jobArgs, localFile)
