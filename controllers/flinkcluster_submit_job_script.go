@@ -25,6 +25,20 @@ var submitJobScript = `
 # blindly but check if there is already one found in Flink. If found, it simply
 # waits on the job.
 set -euo pipefail
+
+drop_privs_cmd() {
+    if [ $(id -u) != 0 ]; then
+        # Don't need to drop privs if EUID != 0
+        return
+    elif [ -x /sbin/su-exec ]; then
+        # Alpine
+        echo su-exec sloth
+    else
+        # Others
+        echo gosu sloth
+    fi
+}
+
 JOB_MANAGER="$2"
 function list_jobs() {
 	for i in {1..10}; do
@@ -49,7 +63,7 @@ function check_existing_jobs() {
 function submit_job() {
 	echo -e "\nSubmitting job..."
 	echo "/opt/flink/bin/flink run $@"
-	/opt/flink/bin/flink run "$@"
+    /opt/flink/bin/flink run "$@"
 }
 function wait_for_job() {
 	while true; do

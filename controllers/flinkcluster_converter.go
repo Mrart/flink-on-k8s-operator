@@ -985,21 +985,45 @@ func convertGCPConfig(gcpConfig *v1beta1.GCPConfig) (*corev1.Volume, *corev1.Vol
 // TODO: Wouldn't it be better to create a file, put it in an operator image, and read from them?.
 // Provide logging profiles
 func getLogConf() map[string]string {
-	var log4jProperties = `log4j.rootLogger=INFO, file
+	var log4jProperties = `log4j.rootLogger=DEBUG, file, debugLog, errorLog
 log4j.logger.akka=INFO
 log4j.logger.org.apache.kafka=INFO
 log4j.logger.org.apache.hadoop=INFO
 log4j.logger.org.apache.zookeeper=INFO
-log4j.appender.file=org.apache.log4j.FileAppender
+log4j.appender.file=org.apache.log4j.RollingFileAppender
 log4j.appender.file.file=${log.file}
-log4j.appender.file.append=false
+log4j.appender.file.Threshold=INFO
+log4j.appender.file.MaxFileSize=256KB
+log4j.appender.file.MaxBackupIndex=100
 log4j.appender.file.layout=org.apache.log4j.PatternLayout
 log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n
-log4j.logger.org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline=ERROR, file`
+log4j.appender.debugLog=org.apache.log4j.RollingFileAppender
+log4j.appender.debugLog.file=${log.file}.debug
+log4j.appender.debugLog.Threshold=DEBUG
+log4j.appender.debugLog.MaxFileSize=100MB
+log4j.appender.debugLog.MaxBackupIndex=5
+log4j.appender.debugLog.layout=org.apache.log4j.PatternLayout
+log4j.appender.debugLog.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n
+log4j.appender.errorLog=org.apache.log4j.RollingFileAppender
+log4j.appender.errorLog.file=${log.file}.kerr
+log4j.appender.errorLog.Threshold=ERROR
+log4j.appender.errorLog.MaxFileSize=2048KB
+log4j.appender.errorLog.MaxBackupIndex=50
+log4j.appender.errorLog.layout=org.apache.log4j.PatternLayout
+log4j.appender.errorLog.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n
+log4j.logger.org.jboss.netty.channel.DefaultChannelPipeline=ERROR, file`
 	var logbackXML = `<configuration>
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.file}</file>
         <append>false</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.file}.%i</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>20</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>2MB</maxFileSize>
+        </triggeringPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{60} %X{sourceThread} - %msg%n</pattern>
         </encoder>
@@ -1019,7 +1043,7 @@ log4j.logger.org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannel
     <logger name="org.apache.zookeeper" level="INFO">
         <appender-ref ref="file"/>
     </logger>
-    <logger name="org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline" level="ERROR">
+    <logger name="org.jboss.netty.channel.DefaultChannelPipeline" level="ERROR">
         <appender-ref ref="file"/>
     </logger>
 </configuration>`

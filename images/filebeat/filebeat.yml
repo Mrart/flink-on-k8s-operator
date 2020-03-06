@@ -29,7 +29,7 @@ filebeat.inputs:
   paths:
   #- /home/sloth/hadoop/yarn/logs/application_*/container_*/*.log.debug
    - /opt/flink/log/*/*.log
-   - /opt/flink/log/*/*.err
+   - /opt/flink/log/*/*.log.kerr
 #  - /home/sloth/hadoop/yarn/logs/application_*/container_*/*.log
 #  - /home/sloth/hadoop/yarn/logs/application_*/container_*/*.err
 #  - /home/sloth/hadoop/yarn/logs/application_*/container_*/*.log.error
