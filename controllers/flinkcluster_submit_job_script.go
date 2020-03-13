@@ -26,19 +26,6 @@ var submitJobScript = `
 # waits on the job.
 set -euo pipefail
 
-drop_privs_cmd() {
-    if [ $(id -u) != 0 ]; then
-        # Don't need to drop privs if EUID != 0
-        return
-    elif [ -x /sbin/su-exec ]; then
-        # Alpine
-        echo su-exec sloth
-    else
-        # Others
-        echo gosu sloth
-    fi
-}
-
 JOB_MANAGER="$2"
 function list_jobs() {
 	for i in {1..10}; do
@@ -69,7 +56,7 @@ function wait_for_job() {
 	while true; do
 		echo -e "\nWaiting for job to finish..."
 		list_jobs
-		if list_jobs | grep -e "(FINISHED)" -e "(FAILED)"; then
+		if list_jobs | grep -e "(FINISHED)" -e "(FAILED)" -e "(CANCELED)"; then
 			echo -e "\nJob has terminated, exiting..."
 			break
 		fi
