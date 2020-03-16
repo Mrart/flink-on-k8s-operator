@@ -22,15 +22,14 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"reflect"
-	"time"
-
 	"github.com/go-logr/logr"
-	v1beta1 "github.com/googlecloudplatform/flink-operator/api/v1beta1"
+	"github.com/googlecloudplatform/flink-operator/api/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/record"
+	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"time"
 )
 
 // ClusterStatusUpdater updates the status of the FlinkCluster CR.
