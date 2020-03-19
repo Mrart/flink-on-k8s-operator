@@ -303,6 +303,11 @@ type JobSpec struct {
 	// `savePointsDir` is provided, a savepoint will be taken before stopping the
 	// job.
 	CancelRequested *bool `json:"cancelRequested,omitempty"`
+
+	// Selector which must match a node's labels for the TaskManager pod to be
+	// scheduled on that node.
+	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+	NodeSelector map[string]string `json:"nodeSelector,omitempty"`
 }
 
 // FlinkClusterSpec defines the desired state of FlinkCluster

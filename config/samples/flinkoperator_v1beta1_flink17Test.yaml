@@ -16,6 +16,8 @@ apiVersion: flinkoperator.k8s.io/v1beta1
 kind: FlinkCluster
 metadata:
   name: consumerdata
+  labels:
+    name: labeltest
 spec:
   image:
     name: hub.c.163.com/flink/flink:1.7.2.4
@@ -35,8 +37,10 @@ spec:
     volumeMounts:
     - mountPath: /opt/flink/log
       name: consumerdata-sloth
+#    nodeSelector:
+#       app: flink
   taskManager:
-    replicas: 6
+    replicas: 2
     resources:
       limits:
         memory: "4096Mi"
@@ -47,6 +51,8 @@ spec:
     volumeMounts:
     - mountPath: /opt/flink/log
       name: consumerdata-sloth
+#    nodeSelector:
+#      app: flink
   job:
     jarFile: hdfs://slothTest/sloth/sloth/blockupload/b9dec94537b86403a01bbcccdec07c32/kafkaDemo-1.0-SNAPSHOT.jar
     className: com.netease.java.kafka010.Kafka010Example
@@ -59,6 +65,8 @@ spec:
     volumeMounts:
     - mountPath: /opt/flink/log
       name: consumerdata-sloth
+    nodeSelector:
+      app: flink
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
     high-availability: zookeeper

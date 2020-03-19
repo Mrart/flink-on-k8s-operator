@@ -106,6 +106,10 @@ func getDesiredJobManagerDeployment(
 		"app":       "flink",
 		"component": "jobmanager",
 	}
+	var clusterLabels = flinkCluster.ObjectMeta.Labels
+	for key, value := range clusterLabels {
+		labels[key] = value
+	}
 	// Make Volume, VolumeMount to use configMap data for flink-conf.yaml, if flinkProperties is provided.
 	var volumes []corev1.Volume
 	var volumeMounts []corev1.VolumeMount
@@ -250,6 +254,10 @@ func getDesiredJobManagerService(
 		"app":       "flink",
 		"component": "jobmanager",
 	}
+	var clusterLabels = flinkCluster.ObjectMeta.Labels
+	for key, value := range clusterLabels {
+		labels[key] = value
+	}
 	var jobManagerService = &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: clusterNamespace,
@@ -308,6 +316,10 @@ func getDesiredJobManagerIngress(
 		"cluster":   clusterName,
 		"app":       "flink",
 		"component": "jobmanager",
+	}
+	var clusterLabels = flinkCluster.ObjectMeta.Labels
+	for key, value := range clusterLabels {
+		labels[key] = value
 	}
 	if jobManagerIngressSpec.HostFormat != nil {
 		ingressHost = getJobManagerIngressHost(*jobManagerIngressSpec.HostFormat, clusterName)
@@ -380,6 +392,10 @@ func getDesiredTaskManagerDeployment(
 		"cluster":   clusterName,
 		"app":       "flink",
 		"component": "taskmanager",
+	}
+	var clusterLabels = flinkCluster.ObjectMeta.Labels
+	for key, value := range clusterLabels {
+		labels[key] = value
 	}
 	// Make Volume, VolumeMount to use configMap data for flink-conf.yaml
 	var volumes []corev1.Volume
@@ -509,6 +525,10 @@ func getDesiredConfigMap(
 		"cluster": clusterName,
 		"app":     "flink",
 	}
+	var clusterLabels = flinkCluster.ObjectMeta.Labels
+	for key, value := range clusterLabels {
+		labels[key] = value
+	}
 	var flinkHeapSize = calFlinkHeapSize(flinkCluster)
 	// Properties which should be provided from real deployed environment.
 	var flinkProps = map[string]string{
@@ -581,6 +601,10 @@ func getDesiredJob(
 		"cluster": clusterName,
 		"app":     "flink",
 	}
+	var clusterLabels = flinkCluster.ObjectMeta.Labels
+	for key, value := range clusterLabels {
+		labels[key] = value
+	}
 	var jobArgs = []string{"bash", "/opt/flink-operator/submit-job.sh"}
 	jobArgs = append(jobArgs, "--jobmanager", jobManagerAddress)
 	if jobSpec.ClassName != nil {
@@ -610,22 +634,6 @@ func getDesiredJob(
 
 	var envVars = []corev1.EnvVar{}
 
-	// If the JAR file is remote, put the URI in the env variable
-	// FLINK_JOB_JAR_URI and rewrite the JAR path to a local path. The entrypoint
-	// script of the container will download it before submitting it to Flink.
-	var jarPath = jobSpec.JarFile
-	if strings.Contains(jobSpec.JarFile, "://") {
-		var parts = strings.Split(jobSpec.JarFile, "/")
-		jarPath = "/opt/flink/job/" + parts[len(parts)-1]
-		envVars = append(envVars, corev1.EnvVar{
-			Name:  "FLINK_JOB_JAR_URI",
-			Value: jobSpec.JarFile,
-		})
-	}
-
-	jobArgs = append(jobArgs, jarPath)
-	jobArgs = append(jobArgs, jobSpec.Args...)
-
 	var filePath string
 	//filePath = jobSpec.FilePath;
 	for _, file := range jobSpec.FilePath {
@@ -648,6 +656,22 @@ func getDesiredJob(
 		Name:  "FLINK_JOB_FILES_URI",
 		Value: filePath,
 	})
+
+	// If the JAR file is remote, put the URI in the env variable
+	// FLINK_JOB_JAR_URI and rewrite the JAR path to a local path. The entrypoint
+	// script of the container will download it before submitting it to Flink.
+	var jarPath = jobSpec.JarFile
+	if strings.Contains(jobSpec.JarFile, "://") {
+		var parts = strings.Split(jobSpec.JarFile, "/")
+		jarPath = "/opt/flink/job/" + parts[len(parts)-1]
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "FLINK_JOB_JAR_URI",
+			Value: jobSpec.JarFile,
+		})
+	}
+
+	jobArgs = append(jobArgs, jarPath)
+	jobArgs = append(jobArgs, jobSpec.Args...)
 
 	var volumes []corev1.Volume
 	var volumeMounts []corev1.VolumeMount
@@ -702,6 +726,7 @@ func getDesiredJob(
 		RestartPolicy:    corev1.RestartPolicyNever,
 		Volumes:          volumes,
 		ImagePullSecrets: imageSpec.PullSecrets,
+		NodeSelector: jobSpec.NodeSelector,
 	}
 
 	// Disable the retry mechanism of k8s Job, all retires should be initiated
@@ -725,6 +750,7 @@ func getDesiredJob(
 				ObjectMeta: metav1.ObjectMeta{Labels: labels},
 				Spec:       podSpec,
 			},
+			Selector: &metav1.LabelSelector{MatchLabels: labels},
 			BackoffLimit: &backoffLimit,
 		},
 	}
