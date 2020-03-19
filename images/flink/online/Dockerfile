@@ -22,7 +22,11 @@ FROM openjdk:8-jre
 RUN set -ex; \
   apt-get update; \
   apt-get -y install libsnappy1v5; \
+  apt-get -y install krb5-user; \
   rm -rf /var/lib/apt/lists/*
+
+ARG HADOOP_CONF
+ENV HADOOP_CONF=${HADOOP_CONF}
 
 # Grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.11
@@ -44,7 +48,8 @@ RUN set -ex; \
   gosu nobody true
 
 # Configure Flink version
-ENV FLINK_VERSION=1.9.1 \
+ARG FLINK_VERSION
+ENV FLINK_VERSION=${FLINK_VERSION} \
     SCALA_VERSION=2.11
 #    GPG_KEY=E2C45417BED5C104154F341085BACB5AEFAE3202
 
@@ -66,7 +71,7 @@ ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
     HDFS_CLIENT_URL=nbot-common.nos-jd.163yun.com/hdfs-client.tar.gz \
     HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar \
     FLINK_METRIC_URL=nbot-common.nos-jd.163yun.com/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar \
-    FLINK_METRIC_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar
+    FLINK_GUAVA_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar
 
 # Install Flink
 RUN set -ex; \
@@ -93,7 +98,7 @@ RUN set -ex; \
   \
   wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
-  wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_METRIC_LIB_URL"; \
+  wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_GUAVA_LIB_URL"; \
   chown -R sloth:sloth .; \
   chown -R sloth:sloth /tmp; \
   chown -R sloth:sloth /mnt; \
@@ -101,6 +106,12 @@ RUN set -ex; \
   chmod +x /tmp; \
   rm -f /etc/localtime; \
   ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
+
+#Add hadoop config
+COPY HADOOP_CONF /opt/flink/hdfs/
+COPY HADOOP_CONF /etc/krb5.conf
+#NV HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
+ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
 
 # Configure container
 COPY docker-entrypoint.sh /

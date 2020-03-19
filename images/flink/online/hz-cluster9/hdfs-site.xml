@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>dfs.nameservices</name>
+        <value>hz-cluster7,hz-cluster9</value>
+    </property>
+
+    <property>
+        <name>dfs.ha.namenodes.hz-cluster7</name>
+        <value>nn1,nn2</value>
+    </property>
+
+    <property>
+        <name>dfs.ha.namenodes.hz-cluster9</name>
+        <value>nn5,nn6</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.rpc-address.hz-cluster7.nn1</name>
+        <value>hadoop2246.jd.163.org:8020</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.rpc-address.hz-cluster7.nn2</name>
+        <value>hadoop2247.jd.163.org:8020</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.rpc-address.hz-cluster9.nn5</name>
+        <value>hadoop3002.jd.163.org:8020</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.rpc-address.hz-cluster9.nn6</name>
+        <value>hadoop3003.jd.163.org:8020</value>
+    </property>
+
+    <property>
+        <name>dfs.client.failover.proxy.provider.hz-cluster7</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+
+    <property>
+        <name>dfs.client.failover.proxy.provider.hz-cluster9</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+
+    <property>
+        <name>fs.permissions.umask-mode</name>
+        <value>027</value>
+    </property>
+
+    <property>
+        <name>dfs.blocksize</name>
+        <value>268435456</value>
+    </property>
+
+    <property>
+        <name>dfs.client.read.shortcircuit</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>dfs.client.read.shortcircuit.streams.cache.size</name>
+        <value>1024</value>
+    </property>
+
+    <property>
+        <name>dfs.client.read.shortcircuit.streams.cache.size.expiry.ms</name>
+        <value>300000</value>
+    </property>
+
+    <property>
+        <name>dfs.domain.socket.path</name>
+        <value>/var/lib/hadoop-hdfs/dn_socket</value>
+    </property>
+</configuration>

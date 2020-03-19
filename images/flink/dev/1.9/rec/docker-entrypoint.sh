@@ -46,6 +46,8 @@ mkdir -p ${FLINK_HOME}/job
 chmod 777 ${FLINK_HOME}/job -R
 chown sloth:sloth -R /opt/flink/job
 
+DOCKER_ENV_HADOOP_CONF = $HADOOP_CONF_DIR
+
 # Download remote classpath file.
 if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
   files=(${FLINK_JOB_FILES_URI//,/ })
@@ -53,7 +55,14 @@ if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
   do
   echo "Downloading job JAR ${file} to ${FLINK_HOME}/lib/"
   if [[ "${file}" == hdfs://* ]]; then
+    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
+    then
+      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
+    else
+      echo "No need change the hdfs config"
+    fi
     su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $file ${FLINK_HOME}/lib/"
+    export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
   elif [[ "${file}" == http://* || "${file}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/lib/" "${file}"
   else
@@ -150,7 +159,7 @@ fi
 if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
   echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
   if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
-    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
+    $(drop_privs_cmd) "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
   elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
   else

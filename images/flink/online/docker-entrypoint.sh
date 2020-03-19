@@ -150,7 +150,8 @@ fi
 if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
   echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
   if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
-    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
+    echo $HADOOP_CONF_DIR
+    su - sloth -c "export HADOOP_CONF_DIR=/opt/flink/hdfs/ && export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
   elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
   else
