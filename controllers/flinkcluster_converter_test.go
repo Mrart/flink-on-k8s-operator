@@ -52,6 +52,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 	var memoryOffHeapRatio int32 = 25
 	var memoryOffHeapMin = resource.MustParse("600M")
 	var jobBackoffLimit int32 = 0
+	var jobmanualSelector bool = true;
 	var jmProbe = corev1.Probe{
 		Handler: corev1.Handler{
 			TCPSocket: &corev1.TCPSocketAction{
@@ -737,13 +738,14 @@ func TestGetDesiredClusterState(t *testing.T) {
 				},
 			},
 			BackoffLimit: &jobBackoffLimit,
-			//Selector: &metav1.LabelSelector{
-			//	MatchLabels: map[string]string{
-			//		"app":       "flink",
-			//		"cluster":   "flinkjobcluster-sample",
-			//		//"test": "test",
-			//	},
-			//},
+			ManualSelector: &jobmanualSelector,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"app":       "flink",
+					"cluster":   "flinkjobcluster-sample",
+					"test": "test",
+				},
+			},
 		},
 	}
 

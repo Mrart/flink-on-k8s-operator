@@ -737,6 +737,7 @@ func getDesiredJob(
 	// longer the same job as the previous one because the `--fromSavepoint`
 	// parameter has changed.
 	var backoffLimit int32 = 0
+	var manualSelector = true
 	var job = &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: clusterNamespace,
@@ -750,7 +751,8 @@ func getDesiredJob(
 				ObjectMeta: metav1.ObjectMeta{Labels: labels},
 				Spec:       podSpec,
 			},
-			//Selector: &metav1.LabelSelector{MatchLabels: labels},
+			Selector: &metav1.LabelSelector{MatchLabels: labels},
+			ManualSelector: &manualSelector,
 			BackoffLimit: &backoffLimit,
 		},
 	}
