@@ -640,7 +640,7 @@ func getDesiredJob(
 		var localFile = file
 		if strings.Contains(file, "://") {
 			var parts = strings.Split(file, "/")
-			localFile = "file:///opt/flink/lib/" + parts[len(parts)-1]
+			localFile = "file:///opt/flink/job/" + parts[len(parts)-1]
 		}
 		jobArgs = append(jobArgs, "--classpath")
 		jobArgs = append(jobArgs, localFile)
@@ -750,7 +750,7 @@ func getDesiredJob(
 				ObjectMeta: metav1.ObjectMeta{Labels: labels},
 				Spec:       podSpec,
 			},
-			Selector: &metav1.LabelSelector{MatchLabels: labels},
+			//Selector: &metav1.LabelSelector{MatchLabels: labels},
 			BackoffLimit: &backoffLimit,
 		},
 	}

@@ -63,7 +63,7 @@ ENV FLINK_URL_FILE_PATH=flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
 # Not all mirrors have the .asc files
 ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
     FLINK_ASC_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH}.asc \
-    HDFS_CLIENT_URL=nbot-common.nos-jd.163yun.com/hdfs-client.tar.gz \
+
     HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar \
     FLINK_METRIC_URL=nbot-common.nos-jd.163yun.com/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar \
     FLINK_GUAVA_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar
@@ -72,9 +72,9 @@ ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
 RUN set -ex; \
   wget -nv -O flink.tgz "$FLINK_TGZ_URL"; \
  # wget -nv -O flink.tgz.asc "$FLINK_ASC_URL"; \
-  wget -nv -O hdfs-client.tar.gz "$HDFS_CLIENT_URL"; \
-  tar -xvf hdfs-client.tar.gz -C /opt/; \
-  rm -rf hdfs-client.tar.gz; \
+#  wget -nv -O hdfs-client.tar.gz "$HDFS_CLIENT_URL"; \
+#  tar -xvf hdfs-client.tar.gz -C /opt/; \
+  #rm -rf hdfs-client.tar.gz; \
   \
   export GNUPGHOME="$(mktemp -d)"; \
 #  for server in ha.pool.sks-keyservers.net $(shuf -e \
@@ -93,7 +93,7 @@ RUN set -ex; \
   \
   wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
-  wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_METRIC_LIB_URL"; \
+  wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_GUAVA_LIB_URL"; \
   chown -R sloth:sloth .; \
   chown -R sloth:sloth /tmp; \
   chown -R sloth:sloth /mnt; \
@@ -101,6 +101,8 @@ RUN set -ex; \
   chmod +x /tmp; \
   rm -f /etc/localtime; \
   ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
+COPY slothtest /opt/flink/hdfs/
+ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
 
 # Configure container
 COPY docker-entrypoint.sh /

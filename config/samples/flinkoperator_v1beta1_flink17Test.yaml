@@ -17,10 +17,10 @@ kind: FlinkCluster
 metadata:
   name: consumerdata
   labels:
-    name: labeltest
+    colocation.netease.com/workload-type: service
 spec:
   image:
-    name: hub.c.163.com/flink/flink:1.7.2.4
+    name: hub.c.163.com/flink/flink:1.9.1-hdfs-1
     pullPolicy: IfNotPresent
   jobManager:
     accessScope: NodePort
@@ -40,7 +40,7 @@ spec:
 #    nodeSelector:
 #       app: flink
   taskManager:
-    replicas: 2
+    replicas: 1
     resources:
       limits:
         memory: "4096Mi"
@@ -54,19 +54,39 @@ spec:
 #    nodeSelector:
 #      app: flink
   job:
-    jarFile: hdfs://slothTest/sloth/sloth/blockupload/b9dec94537b86403a01bbcccdec07c32/kafkaDemo-1.0-SNAPSHOT.jar
-    className: com.netease.java.kafka010.Kafka010Example
+    jarFile: hdfs://slothTest/sloth/sloth/blockupload/dbdf751b54eb11b0699fef07740cf7b2/kafkaDemo19-1.0-SNAPSHOT.jar
+    filePath: ["hdfs://slothTest/sloth/sloth/blockupload/6df0fde9feeb2b73d669c1de91939b1e/fastjson-1.2.66.jar"]
+    className: com.netease.java.TopSpeedWindowing
     args: ["--input-topic", "k8s-test-data","--bootstrap.servers","sloth-test0.dg.163.org:9092,sloth-test1.dg.163.org:9092,sloth-test2.dg.163.org:9092",
            "--group.id","consumer-5","--output-topic", "k8s-test-output"]
-    parallelism: 2
+    parallelism: 1
     volumes:
     - name: consumerdata-sloth
+      emptyDir: {}
+    - name: init-job
       emptyDir: {}
     volumeMounts:
     - mountPath: /opt/flink/log
       name: consumerdata-sloth
-    nodeSelector:
-      app: flink
+    - mountPath: /opt/flink/job
+      name: init-job
+    env:
+      - name: FLINK_JOB_FILES_URI
+        value: "hdfs://slothTest/sloth/sloth/blockupload/6df0fde9feeb2b73d669c1de91939b1e/fastjson-1.2.66.jar"
+#    nodeSelector:
+#      app: flink
+    initContainers:
+     - name: hdfs-downloader
+       image: hub.c.163.com/flink/flink-init:0.0.5
+       pullPolicy: Always
+       volumeMounts:
+       - mountPath: /opt/flink/job
+         name: init-job
+       env:
+         - name: FLINK_JOB_JAR_URI
+           value: "hdfs://slothTest/sloth/sloth/blockupload/dbdf751b54eb11b0699fef07740cf7b2/kafkaDemo19-1.0-SNAPSHOT.jar"
+         - name: FLINK_JOB_FILES_URI
+           value: "hdfs://slothTest/sloth/sloth/blockupload/6df0fde9feeb2b73d669c1de91939b1e/fastjson-1.2.66.jar"
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
     high-availability: zookeeper

@@ -737,13 +737,13 @@ func TestGetDesiredClusterState(t *testing.T) {
 				},
 			},
 			BackoffLimit: &jobBackoffLimit,
-			Selector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"app":       "flink",
-					"cluster":   "flinkjobcluster-sample",
-					"test": "test",
-				},
-			},
+			//Selector: &metav1.LabelSelector{
+			//	MatchLabels: map[string]string{
+			//		"app":       "flink",
+			//		"cluster":   "flinkjobcluster-sample",
+			//		//"test": "test",
+			//	},
+			//},
 		},
 	}
 

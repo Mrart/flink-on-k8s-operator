@@ -42,27 +42,6 @@ sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${UUID}\/${H
 mkdir -p /opt/flink/log/${UUID}
 chmod 777 -R /opt/flink/log/${UUID}
 chown sloth:sloth -R /opt/flink/log/${UUID}
-mkdir -p ${FLINK_HOME}/job
-chmod 777 ${FLINK_HOME}/job -R
-chown sloth:sloth -R /opt/flink/job
-
-# Download remote classpath file.
-if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
-  files=(${FLINK_JOB_FILES_URI//,/ })
-  for file in ${files[@]}
-  do
-  echo "Downloading job JAR ${file} to ${FLINK_HOME}/lib/"
-  if [[ "${file}" == hdfs://* ]]; then
-    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $file ${FLINK_HOME}/lib/"
-  elif [[ "${file}" == http://* || "${file}" == https://* ]]; then
-    wget -nv -P "${FLINK_HOME}/lib/" "${file}"
-  else
-    echo "Unsupported protocol for ${file}"
-    exit 1
-
-  fi
-  done
-fi
 
 if [ "$1" = "help" ]; then
     echo "Usage: $(basename "$0") (jobmanager|taskmanager|help)"
@@ -147,16 +126,16 @@ elif [ "$1" = "taskmanager" ]; then
 fi
 
 # Download remote job JAR file.
-if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
-  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
-  if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
-    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
-  elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
-    wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
-  else
-    echo "Unsupported protocol for ${FLINK_JOB_JAR_URI}"
-    exit 1
-  fi
-fi
+#if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
+#  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
+#  if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
+#    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
+#  elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
+#    wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
+#  else
+#    echo "Unsupported protocol for ${FLINK_JOB_JAR_URI}"
+#    exit 1
+#  fi
+#fi
 
 exec "$@"
