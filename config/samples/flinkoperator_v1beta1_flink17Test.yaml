@@ -87,10 +87,13 @@ spec:
            value: "hdfs://slothTest/sloth/sloth/blockupload/dbdf751b54eb11b0699fef07740cf7b2/kafkaDemo19-1.0-SNAPSHOT.jar"
          - name: FLINK_JOB_FILES_URI
            value: "hdfs://slothTest/sloth/sloth/blockupload/6df0fde9feeb2b73d669c1de91939b1e/fastjson-1.2.66.jar"
+  env:
+    - name: UUID
+    - value: test
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
     high-availability: zookeeper
-    high-availability.zookeeper.quorum: sloth-test0.dg.163.org:2181,sloth-test1.dg.163.org:2181,sloth-test2.dg.163.org:2181
+    high-availability.zookeeper.quorum: 10.178.4.196:2181
     high-availability.storageDir: hdfs://slothTest/user/sloth/HA/
     high-availability.cluster-id: "consumerdata"
     high-availability.jobmanager.port: "6123"

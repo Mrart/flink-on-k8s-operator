@@ -159,7 +159,14 @@ fi
 if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
   echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
   if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
+    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
+    then
+      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
+    else
+      echo "No need change the hdfs config"
+    fi
     $(drop_privs_cmd) "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
+     export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
   elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
   else

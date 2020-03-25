@@ -61,7 +61,7 @@ spec:
   flinkProperties:
     taskmanager.numberOfTaskSlots: "1"
     high-availability: zookeeper
-    high-availability.zookeeper.quorum: sloth20.hz.163.org:2181,sloth21.hz.163.org:2181,sloth22.hz.163.org:2181
+    high-availability.zookeeper.quorum: 10.178.4.196:2181
     high-availability.storageDir: hdfs://sloth-hz-20/sloth/HA/
     high-availability.cluster-id: "savepoint"
     high-availability.jobmanager.port: "6123"
