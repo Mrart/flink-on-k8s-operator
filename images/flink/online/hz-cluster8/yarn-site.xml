@@ -1,0 +1,42 @@
+<configuration>
+  <property>
+    <name>yarn.resourcemanager.ha.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.ha.rm-ids</name>
+    <value>rm1,rm2</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.hostname.rm1</name>
+    <value>hadoop2248.jd.163.org</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.hostname.rm2</name>
+    <value>hadoop2249.jd.163.org</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.webapp.address.rm1</name>
+    <value>hadoop2248.jd.163.org:8088</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.webapp.address.rm2</name>
+    <value>hadoop2249.jd.163.org:8088</value>
+  </property>
+
+  <!-- ResourceManager security configs -->
+  <property>
+    <name>yarn.resourcemanager.principal</name>
+    <value>yarn/_HOST@HADOOP2.HZ.NETEASE.COM</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir</name>
+    <value>hdfs://hz-cluster7/app-logs</value>
+  </property>
+
+  <property>
+    <name>mapreduce.job.hdfs-servers</name>
+    <value>hdfs://hz-cluster7,hdfs://hz-cluster8</value>
+  </property>
+</configuration>

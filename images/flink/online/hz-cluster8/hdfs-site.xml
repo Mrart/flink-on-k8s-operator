@@ -1,0 +1,137 @@
+<configuration>
+
+  <property>
+    <name>dfs.nameservices</name>
+    <value>hz-cluster7,hz-cluster8</value>
+  </property>
+
+  <property>
+    <name>dfs.ha.namenodes.hz-cluster7</name>
+    <value>nn1,nn2</value>
+  </property>
+
+  <property>
+    <name>dfs.ha.namenodes.hz-cluster8</name>
+    <value>nn3,nn4</value>
+  </property>
+
+  <property>
+    <name>dfs.internal.nameservices</name>
+    <value>hz-cluster8</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.hz-cluster7.nn1</name>
+    <value>hadoop2246.jd.163.org:50070</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.hz-cluster7.nn2</name>
+    <value>hadoop2247.jd.163.org:50070</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.https-address.hz-cluster7.nn1</name>
+    <value>hadoop2246.jd.163.org:50470</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.https-address.hz-cluster7.nn2</name>
+    <value>hadoop2247.jd.163.org:50470</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.hz-cluster7.nn1</name>
+    <value>hadoop2246.jd.163.org:8020</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.hz-cluster7.nn2</name>
+    <value>hadoop2247.jd.163.org:8020</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.servicerpc-address.hz-cluster7.nn1</name>
+    <value>hadoop2246.jd.163.org:8021</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.servicerpc-address.hz-cluster7.nn2</name>
+    <value>hadoop2247.jd.163.org:8021</value>
+  </property>
+
+  <property>
+    <name>dfs.client.failover.proxy.provider.hz-cluster7</name>
+    <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.hz-cluster8.nn3</name>
+    <value>hadoop3000.jd.163.org:50070</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.hz-cluster8.nn4</name>
+    <value>hadoop3001.jd.163.org:50070</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.https-address.hz-cluster8.nn3</name>
+    <value>hadoop3000.jd.163.org:50470</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.https-address.hz-cluster8.nn4</name>
+    <value>hadoop3001.jd.163.org:50470</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.hz-cluster8.nn3</name>
+    <value>hadoop3000.jd.163.org:8020</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.hz-cluster8.nn4</name>
+    <value>hadoop3001.jd.163.org:8020</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.servicerpc-address.hz-cluster8.nn3</name>
+    <value>hadoop3000.jd.163.org:8021</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.servicerpc-address.hz-cluster8.nn4</name>
+    <value>hadoop3001.jd.163.org:8021</value>
+  </property>
+
+  <property>
+    <name>dfs.client.failover.proxy.provider.hz-cluster8</name>
+    <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.kerberos.principal</name>
+    <value>hdfs/_HOST@HADOOP2.HZ.NETEASE.COM</value>
+  </property>
+
+  <property>
+    <name>dfs.client.read.shortcircuit</name>
+    <value>true</value>
+  </property>
+
+  <property>
+    <name>dfs.client.read.shortcircuit.streams.cache.size</name>
+    <value>1024</value>
+  </property>
+
+  <property>
+    <name>dfs.client.read.shortcircuit.streams.cache.size.expiry.ms</name>
+    <value>300000</value>
+  </property>
+
+  <property>
+    <name>dfs.domain.socket.path</name>
+    <value>/var/lib/hadoop-hdfs/dn_socket</value>
+  </property>
+</configuration>

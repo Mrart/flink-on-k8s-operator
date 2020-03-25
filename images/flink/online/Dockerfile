@@ -25,8 +25,8 @@ RUN set -ex; \
   apt-get -y install krb5-user; \
   rm -rf /var/lib/apt/lists/*
 
-ARG HADOOP_CONF
-ENV HADOOP_CONF=${HADOOP_CONF}
+ARG HADOOP_CONF_DIR
+ENV HADOOP_CONF_DIR=${HADOOP_CONF_DIR}
 
 # Grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.11
@@ -49,8 +49,9 @@ RUN set -ex; \
 
 # Configure Flink version
 ARG FLINK_VERSION
+ARG SCALA_VERSION
 ENV FLINK_VERSION=${FLINK_VERSION} \
-    SCALA_VERSION=2.11
+    SCALA_VERSION=${SCALA_VERSION}
 #    GPG_KEY=E2C45417BED5C104154F341085BACB5AEFAE3202
 
 # Prepare environment
@@ -58,7 +59,6 @@ ENV FLINK_HOME=/opt/flink
 ENV HADOOP_HOME_DIR=/opt/hdfs_client
 ENV JAVA_HOME=/usr/local/openjdk-8
 ENV PATH=$FLINK_HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME_DIR/bin:$HADOOP_HOME_DIR/sbin:$PATH
-ENV HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
 RUN groupadd --system --gid=9998 sloth && \
     useradd --system --home-dir $FLINK_HOME --uid=9998 --gid=sloth sloth
 WORKDIR $FLINK_HOME
@@ -68,7 +68,6 @@ ENV FLINK_URL_FILE_PATH=flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
 # Not all mirrors have the .asc files
 ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
     FLINK_ASC_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH}.asc \
-    HDFS_CLIENT_URL=nbot-common.nos-jd.163yun.com/hdfs-client.tar.gz \
     HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar \
     FLINK_METRIC_URL=nbot-common.nos-jd.163yun.com/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar \
     FLINK_GUAVA_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar
@@ -77,9 +76,6 @@ ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
 RUN set -ex; \
   wget -nv -O flink.tgz "$FLINK_TGZ_URL"; \
  # wget -nv -O flink.tgz.asc "$FLINK_ASC_URL"; \
-  wget -nv -O hdfs-client.tar.gz "$HDFS_CLIENT_URL"; \
-  tar -xvf hdfs-client.tar.gz -C /opt/; \
-  rm -rf hdfs-client.tar.gz; \
   \
   export GNUPGHOME="$(mktemp -d)"; \
 #  for server in ha.pool.sks-keyservers.net $(shuf -e \
@@ -108,8 +104,8 @@ RUN set -ex; \
   ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
 
 #Add hadoop config
-COPY HADOOP_CONF /opt/flink/hdfs/
-COPY HADOOP_CONF /etc/krb5.conf
+COPY $HADOOP_CONF_DIR /opt/flink/hdfs/
+COPY $HADOOP_CONF_DIR/krb5.conf /etc/krb5.conf
 #NV HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
 ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
 
