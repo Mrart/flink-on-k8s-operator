@@ -62,7 +62,7 @@ filebeat.inputs:
   # to add additional information to the crawled log files for filtering
   fields:
     #  level: debug
-    clusterId: 8
+    clusterId: 15
 
   ### Multiline options
 
@@ -174,7 +174,7 @@ output.kafka:
   hosts: ["datassert-kafka1.dg.163.org:9092","datassert-kafka2.dg.163.org:9092","datassert-kafka3.dg.163.org:9092"]
 
   # message topic selection + partitioning
-  topic: sloth.yarn.log.online
+  topic: nbot.car.bbs
   version: 0.10.2.1
   partition.round_robin:
     reachable_only: false

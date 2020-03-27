@@ -80,5 +80,7 @@ if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
   fi
 fi
 
+exit 0
+
 # Handover to Flink base image's entrypoint.
 exec "/docker-entrypoint.sh" "$@"
