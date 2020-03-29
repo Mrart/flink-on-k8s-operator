@@ -14,6 +14,6 @@
 # limitations under the License.
 
 FLINK_OPERATOR_NAME=flink-operator
-FLINK_OPERATOR_NAMESPACE=flink-operator
+FLINK_OPERATOR_NAMESPACE=flink-operator-system
 FLINK_OPERATOR_SERVICE_ACCOUNT=default
-FLINK_OPERATOR_VERSION=v0.1.0
+FLINK_OPERATOR_VERSION=1.0.l

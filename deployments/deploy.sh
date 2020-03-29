@@ -20,15 +20,15 @@
 set -euxo pipefail
 
 THIS_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
-BASE_DIR=$(realpath ${THIS_DIR}/..)
+#BASE_DIR=$(realpath ${THIS_DIR}/..)
 TEMPLATE_FILE=${THIS_DIR}/flink-operator.yaml.template
 MANIFEST_FILE=/tmp/flink-operator.yaml
 
 echo -e "\nImporting environment variables...\n"
-. ${BASE_DIR}/env.sh
-PROJECT=$(gcloud config list --format "value(core.project)" | sed "s#:#/#")
+. /Users/cbz/netease/flink-on-k8s-operator/env.sh
+#PROJECT=$(gcloud config list --format "value(core.project)" | sed "s#:#/#")
 IMAGE_TAG=${FLINK_OPERATOR_NAME}:${FLINK_OPERATOR_VERSION}
-REMOTE_IMAGE_TAG=gcr.io/${PROJECT}/${IMAGE_TAG}
+REMOTE_IMAGE_TAG=hub.c.163.com/flink/${IMAGE_TAG}
 
 echo -e "\nGenerating Flink Operator manifest file...\n"
 cat ${TEMPLATE_FILE} \
