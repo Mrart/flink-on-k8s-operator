@@ -43,7 +43,7 @@ type ClusterReconciler struct {
 	desired     DesiredClusterState
 }
 
-var requeueResult = ctrl.Result{RequeueAfter: 10 * time.Second, Requeue: true}
+var requeueResult = ctrl.Result{RequeueAfter: 5 * time.Second, Requeue: true}
 
 // Compares the desired state and the observed state, if there is a difference,
 // takes actions to drive the observed state towards the desired state.

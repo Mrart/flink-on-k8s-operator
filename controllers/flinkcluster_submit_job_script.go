@@ -60,7 +60,7 @@ function wait_for_job() {
 			echo -e "\nJob has terminated, exiting..."
 			break
 		fi
-		sleep 30
+		sleep 10
 	done
 }
 function main() {

@@ -146,9 +146,9 @@ func getDesiredJobManagerDeployment(
 				Port: intstr.FromInt(int(*jobManagerSpec.Ports.RPC)),
 			},
 		},
-		TimeoutSeconds:      10,
-		InitialDelaySeconds: 30,
-		PeriodSeconds:       60,
+		TimeoutSeconds:      5,
+		InitialDelaySeconds: 5,
+		PeriodSeconds:       5,
 		FailureThreshold:    5,
 	}
 
@@ -434,9 +434,9 @@ func getDesiredTaskManagerDeployment(
 				Port: intstr.FromInt(int(*taskManagerSpec.Ports.RPC)),
 			},
 		},
-		TimeoutSeconds:      10,
-		InitialDelaySeconds: 30,
-		PeriodSeconds:       60,
+		TimeoutSeconds:      5,
+		InitialDelaySeconds: 5,
+		PeriodSeconds:       5,
 		FailureThreshold:    5,
 	}
 

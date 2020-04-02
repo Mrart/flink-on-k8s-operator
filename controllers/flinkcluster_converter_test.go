@@ -59,9 +59,9 @@ func TestGetDesiredClusterState(t *testing.T) {
 				Port: intstr.FromInt(int(jmRPCPort)),
 			},
 		},
-		TimeoutSeconds:      10,
-		InitialDelaySeconds: 30,
-		PeriodSeconds:       60,
+		TimeoutSeconds:      5,
+		InitialDelaySeconds: 5,
+		PeriodSeconds:       5,
 		FailureThreshold:    5,
 	}
 	var tmProbe = corev1.Probe{
@@ -70,9 +70,9 @@ func TestGetDesiredClusterState(t *testing.T) {
 				Port: intstr.FromInt(int(tmRPCPort)),
 			},
 		},
-		TimeoutSeconds:      10,
-		InitialDelaySeconds: 30,
-		PeriodSeconds:       60,
+		TimeoutSeconds:      5,
+		InitialDelaySeconds: 5,
+		PeriodSeconds:       5,
 		FailureThreshold:    5,
 	}
 	var labels = map[string]string{
