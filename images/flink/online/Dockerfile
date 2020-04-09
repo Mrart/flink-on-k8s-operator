@@ -70,7 +70,8 @@ ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
     FLINK_ASC_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH}.asc \
     HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar \
     FLINK_METRIC_URL=nbot-common.nos-jd.163yun.com/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar \
-    FLINK_GUAVA_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar
+    FLINK_GUAVA_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar \
+    FLINK_HADOOP_COMPATIBILITY=nbot-common.nos-jd.163yun.com/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar
 
 # Install Flink
 RUN set -ex; \
@@ -92,9 +93,10 @@ RUN set -ex; \
   tar -xf flink.tgz --strip-components=1; \
   rm flink.tgz; \
   \
-  wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar "$HADOOP_JAR_URL"; \
+  wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_GUAVA_LIB_URL"; \
+  wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
   chown -R sloth:sloth .; \
   chown -R sloth:sloth /tmp; \
   chown -R sloth:sloth /mnt; \

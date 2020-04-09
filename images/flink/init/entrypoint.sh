@@ -49,13 +49,14 @@ chmod 777 ${FLINK_HOME}/job -R
 chown sloth:sloth -R /opt/flink/job
 
 # Download remote classpath file.
+jarFilesFromHdfs="" ## 拼接字符串
 if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
   files=(${FLINK_JOB_FILES_URI//,/ })
+  echo "Downloading job JAR ${FLINK_JOB_FILES_URI} to ${FLINK_HOME}/job/"
   for file in ${files[@]}
   do
-  echo "Downloading job JAR ${file} to ${FLINK_HOME}/job/"
   if [[ "${file}" == hdfs://* ]]; then
-    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $file ${FLINK_HOME}/job/"
+    jarFilesFromHdfs=$jarFilesFromHdfs" "$file
   elif [[ "${file}" == http://* || "${file}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/lib/" "${file}"
   else
@@ -68,10 +69,9 @@ fi
 
 # Download remote job JAR file.
 if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
-  mkdir -p ${FLINK_HOME}/job
   echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
   if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
-     su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
+     jarFilesFromHdfs=$jarFilesFromHdfs" "$FLINK_JOB_JAR_URI
   elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
   else
@@ -80,7 +80,13 @@ if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
   fi
 fi
 
+if [[ -n "${jarFilesFromHdfs}" ]]; then
+
+  su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/job/"
+
+fi
+
 exit 0
 
 # Handover to Flink base image's entrypoint.
-exec "/docker-entrypoint.sh" "$@"
+#exec "/docker-entrypoint.sh" "$@"
