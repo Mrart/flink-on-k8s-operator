@@ -651,7 +651,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 					},
 					Containers: []v1.Container{
 						{
-							Name:  "main",
+							Name:  "job",
 							Image: "flink:1.8.1",
 							Args: []string{
 								"bash",
