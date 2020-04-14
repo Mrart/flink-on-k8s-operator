@@ -715,7 +715,7 @@ func getDesiredJob(
 		InitContainers: convertJobInitContainers(jobSpec),
 		Containers: []corev1.Container{
 			corev1.Container{
-				Name:            "main",
+				Name:            "job",
 				Image:           imageSpec.Name,
 				ImagePullPolicy: imageSpec.PullPolicy,
 				Args:            jobArgs,
