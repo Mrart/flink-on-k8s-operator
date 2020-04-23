@@ -43,39 +43,9 @@ mkdir -p /opt/flink/log/${UUID}
 chmod 777 -R /opt/flink/log/${UUID}
 chown sloth:sloth -R /opt/flink/log/${UUID}
 
-# Download remote classpath file.
-jarFilesFromHdfs="" ## 拼接字符串
-if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
-  files=(${FLINK_JOB_FILES_URI//,/ })
-  echo "Downloading job JAR ${FLINK_JOB_FILES_URI} to ${FLINK_HOME}/lib"
-  for file in ${files[@]}
-  do
-  if [[ "${file}" == hdfs://* ]]; then
-    jarFilesFromHdfs=$jarFilesFromHdfs" "$file
-  elif [[ "${file}" == http://* || "${file}" == https://* ]]; then
-    wget -nv -P "${FLINK_HOME}/lib/" "${file}"
-  else
-    echo "Unsupported protocol for ${file}"
-    exit 1
 
-  fi
-  done
-fi
-
-# Download remote job JAR file.
-if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
-  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
-  if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
-     jarFilesFromHdfs=$jarFilesFromHdfs" "$FLINK_JOB_JAR_URI
-  elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
-    wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
-  else
-    echo "Unsupported protocol for ${FLINK_JOB_JAR_URI}"
-    exit 1
-  fi
-fi
-#DOCKER_ENV_HADOOP_CONF = $HADOOP_CONF_DIR
-
+echo "env.java.opts.jobmanager: -Duser.timezone=GMT+08
+env.java.opts.taskmanager: -Duser.timezone=GMT+08" >> "${CONF_FILE}"
 
 if [ "$1" = "help" ]; then
     echo "Usage: $(basename "$0") (jobmanager|taskmanager|help)"
@@ -118,17 +88,6 @@ elif [ "$1" = "jobmanager" ]; then
 elif [ "$1" = "taskmanager" ]; then
     shift 1
     echo "Starting Task Manager"
-
-    if [[ -n "${jarFilesFromHdfs}" ]]; then
-#    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
-#    then
-#      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
-#    else
-#      echo "No need change the hdfs config"
-#    fi
-     su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/lib/"
-#  export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
-    fi
 
     TASK_MANAGER_NUMBER_OF_TASK_SLOTS=${TASK_MANAGER_NUMBER_OF_TASK_SLOTS:-$(grep -c ^processor /proc/cpuinfo)}
 

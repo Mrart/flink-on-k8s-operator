@@ -16,7 +16,14 @@
 # limitations under the License.
 ###############################################################################
 
-FROM openjdk:8-jre
+FROM debian:latest
+
+ENV LANG=C.UTF-8
+
+ENV JAVA_HOME=/usr/local/jdk1.8.0_152
+
+ENV PATH=/usr/local/jdk1.8.0_152/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV JAVA_VERSION=8u152
 
 RUN set -ex; \
     apt-get update; \
@@ -27,12 +34,21 @@ RUN set -ex; \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free" >>  /etc/apt/sources.list ;\
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list
 
+
+RUN set -ex; \
+    if ! command -v gpg > /dev/null; \
+    then \
+    apt-get update; \
+    apt-get install -y wget; \
+    apt-get install -y gnupg dirmngr curl netbase wget p11-kit fontconfig libfreetype6 procps; \
+    rm -rf /var/lib/apt/lists/*; \
+    fi
+
 # Install dependencies
 RUN set -ex; \
   apt-get update; \
   apt-get -y install libsnappy1v5; \
   apt-get -y install krb5-user; \
-  apt-get -y install linux-perf-4.19 net-tools numactl procps sysstat vnstat; \
   rm -rf /var/lib/apt/lists/*
 
 ARG HADOOP_CONF_DIR
@@ -57,6 +73,14 @@ RUN set -ex; \
   chmod +x /usr/local/bin/gosu; \
   gosu nobody true
 
+# run install netease ne-jdk-8u152-linux-x64.tar.gz
+
+RUN set -ex; \
+   wget -nv -o ne-jdk-8u152-linux-x64.tgz "http://nbot-common.nos-jd.163yun.com/ne-jdk-8u152-linux-x64.tgz"; \
+#   chmod +x /usr/local/ne-jdk-8u152-linux-x64.tar.gz; \
+   tar -xf ne-jdk-8u152-linux-x64.tgz --strip-components=1; \
+   rm ne-jdk-8u152-linux-x64.tgz
+
 # Configure Flink version
 ARG FLINK_VERSION
 ARG SCALA_VERSION
@@ -78,12 +102,10 @@ ENV FLINK_URL_FILE_PATH=flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
 # Not all mirrors have the .asc files
 ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
     FLINK_ASC_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH}.asc \
-    HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar \
+    HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar \
     FLINK_METRIC_URL=nbot-common.nos-jd.163yun.com/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar \
     FLINK_GUAVA_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar \
-    FLINK_HADOOP_COMPATIBILITY=nbot-common.nos-jd.163yun.com/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar \
-    HDFS_CLIENT_URL=nbot-common.nos-jd.163yun.com/hdfs-client.tar.gz \
-    LIB_SYSTEM_INJECT=nbot-common.nos-jd.163yun.com/libsysinject.so
+    FLINK_HADOOP_COMPATIBILITY=nbot-common.nos-jd.163yun.com/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar
 
 # Install Flink
 RUN set -ex; \
@@ -91,9 +113,16 @@ RUN set -ex; \
  # wget -nv -O flink.tgz.asc "$FLINK_ASC_URL"; \
   \
   export GNUPGHOME="$(mktemp -d)"; \
-  wget -nv -O hdfs-client.tar.gz "$HDFS_CLIENT_URL"; \
-    tar -xvf hdfs-client.tar.gz -C /opt/; \
-    rm -rf hdfs-client.tar.gz; \
+#  for server in ha.pool.sks-keyservers.net $(shuf -e \
+#                          hkp://p80.pool.sks-keyservers.net:80 \
+#                          keyserver.ubuntu.com \
+#                          hkp://keyserver.ubuntu.com:80 \
+#                          pgp.mit.edu) ; do \
+#      gpg --batch --keyserver "$server" --recv-keys "$GPG_KEY" && break || : ; \
+#  done && \
+#  gpg --batch --verify flink.tgz.asc flink.tgz; \
+#  gpgconf --kill all; \
+#  rm -rf "$GNUPGHOME" flink.tgz.asc; \
   \
   tar -xf flink.tgz --strip-components=1; \
   rm flink.tgz; \
@@ -101,8 +130,7 @@ RUN set -ex; \
   wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_GUAVA_LIB_URL"; \
-  wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
-  wget -nv -O /libsysinject.so "$LIB_SYSTEM_INJECT"; \
+#  wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
   chown -R sloth:sloth .; \
   chown -R sloth:sloth /tmp; \
   chown -R sloth:sloth /mnt; \

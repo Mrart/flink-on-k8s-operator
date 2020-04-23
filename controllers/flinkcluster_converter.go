@@ -90,7 +90,6 @@ func getDesiredJobManagerDeployment(
 	if shouldCleanup(flinkCluster, "JobManagerDeployment") {
 		return nil
 	}
-
 	var clusterNamespace = flinkCluster.ObjectMeta.Namespace
 	var clusterName = flinkCluster.ObjectMeta.Name
 	var clusterSpec = flinkCluster.Spec
@@ -600,6 +599,7 @@ func getDesiredJob(
 	var labels = map[string]string{
 		"cluster": clusterName,
 		"app":     "flink",
+		"component": "job",
 	}
 	var clusterLabels = flinkCluster.ObjectMeta.Labels
 	for key, value := range clusterLabels {

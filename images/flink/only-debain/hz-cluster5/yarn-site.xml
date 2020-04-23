@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+  
+<configuration>
+    <property>
+        <name>localhost.hostname.rm1</name>
+        <value>hadoop3566.jd.163.org</value>
+    </property>
+    <property>
+        <name>localhost.hostname.rm2</name>
+        <value>hadoop3567.jd.163.org</value>
+    </property>
+ 
+    <property>
+        <name>yarn.log-aggregation-enable</name>
+        <value>true</value>
+    </property>
+ <property>
+ <name>yarn.nodemanager.remote-app-log-dir</name>
+ <value>/var/log/hadoop-yarn/apps</value>
+ <source>yarn-site.xml</source>
+ </property>
+    <!--ResourceManager HA-->
+    <property>
+        <name>yarn.resourcemanager.ha.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.ha.rm-ids</name>
+        <value>rm2,rm1</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.hostname.rm1</name>
+        <value>${localhost.hostname.rm1}</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.hostname.rm2</name>
+        <value>${localhost.hostname.rm2}</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm1</name>
+        <value>${localhost.hostname.rm1}:8088</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm2</name>
+        <value>${localhost.hostname.rm2}:8088</value>
+    </property>
+ 
+</configuration>

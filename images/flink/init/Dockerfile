@@ -21,6 +21,7 @@ RUN set -ex; \
 COPY ${HADOOP_CONF_DIR}  /opt/flink/hdfs/
 ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
 
+
 # Entry point.
 COPY entrypoint.sh /
 RUN chmod 775 /entrypoint.sh

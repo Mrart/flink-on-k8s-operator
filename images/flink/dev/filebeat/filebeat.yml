@@ -62,7 +62,7 @@ filebeat.inputs:
   # to add additional information to the crawled log files for filtering
   fields:
     #  level: debug
-    clusterId: 41
+    clusterId: 43
 
   ### Multiline options
 

@@ -620,7 +620,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 			Name:      "flinkjobcluster-sample-job",
 			Namespace: "default",
 			Labels: map[string]string{
-				"app": "flink", "cluster": "flinkjobcluster-sample","test": "test"},
+				"app": "flink", "cluster": "flinkjobcluster-sample","component": "job", "test": "test"},
 			OwnerReferences: []metav1.OwnerReference{
 				{APIVersion: "flinkoperator.k8s.io/v1beta1",
 					Kind:               "FlinkCluster",
@@ -633,7 +633,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 		Spec: batchv1.JobSpec{
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: map[string]string{"app": "flink", "cluster": "flinkjobcluster-sample", "test": "test"},
+					Labels: map[string]string{"app": "flink", "cluster": "flinkjobcluster-sample", "component": "job", "test": "test"},
 				},
 				Spec: v1.PodSpec{
 					InitContainers: []v1.Container{
@@ -743,6 +743,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 				MatchLabels: map[string]string{
 					"app":       "flink",
 					"cluster":   "flinkjobcluster-sample",
+					"component": "job",
 					"test": "test",
 				},
 			},
