@@ -32,7 +32,7 @@ RUN set -ex; \
   apt-get update; \
   apt-get -y install libsnappy1v5; \
   apt-get -y install krb5-user; \
-  apt-get -y install linux-perf-4.19 net-tools numactl procps sysstat vnstat; \
+  apt-get -y install linux-perf-4.19 net-tools numactl procps sysstat vnstat vim; \
   rm -rf /var/lib/apt/lists/*
 
 ARG HADOOP_CONF_DIR
@@ -101,7 +101,7 @@ RUN set -ex; \
   wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_GUAVA_LIB_URL"; \
-  wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
+  #wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
   wget -nv -O /libsysinject.so "$LIB_SYSTEM_INJECT"; \
   chown -R sloth:sloth .; \
   chown -R sloth:sloth /tmp; \

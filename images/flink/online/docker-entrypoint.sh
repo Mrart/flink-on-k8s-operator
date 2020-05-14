@@ -35,9 +35,9 @@ drop_privs_cmd() {
         echo gosu sloth
     fi
 }
-
 # fixed log name
 sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${UUID}\/${HOSTNAME}\"/g' $FLINK_HOME/bin/flink-daemon.sh
+sed -i '/constructFlinkClassPath/i\export LD_PRELOAD\=/libsysinject.so' $FLINK_HOME/bin/config.sh
 
 mkdir -p /opt/flink/log/${UUID}
 chmod 777 -R /opt/flink/log/${UUID}
@@ -64,11 +64,11 @@ fi
 
 # Download remote job JAR file.
 if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
-  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
+  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/lib/"
   if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
      jarFilesFromHdfs=$jarFilesFromHdfs" "$FLINK_JOB_JAR_URI
   elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
-    wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
+    wget -nv -P "${FLINK_HOME}/lib/" "${FLINK_JOB_JAR_URI}"
   else
     echo "Unsupported protocol for ${FLINK_JOB_JAR_URI}"
     exit 1
@@ -119,16 +119,16 @@ elif [ "$1" = "taskmanager" ]; then
     shift 1
     echo "Starting Task Manager"
 
-    if [[ -n "${jarFilesFromHdfs}" ]]; then
+ #   if [[ -n "${jarFilesFromHdfs}" ]]; then
 #    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
 #    then
 #      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
 #    else
 #      echo "No need change the hdfs config"
 #    fi
-     su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/lib/"
+     #su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/lib/"
 #  export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
-    fi
+    #fi
 
     TASK_MANAGER_NUMBER_OF_TASK_SLOTS=${TASK_MANAGER_NUMBER_OF_TASK_SLOTS:-$(grep -c ^processor /proc/cpuinfo)}
 

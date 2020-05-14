@@ -96,8 +96,8 @@ RUN set -ex; \
   rm -rf /opt/hdfs_client/etc/hadoop/;
 
 #Add hadoop config
-COPY sloth20 /opt/flink/hdfs/
-COPY sloth20/krb5.conf /etc/krb5.conf
+COPY sloth-jd-pub /opt/flink/hdfs/
+COPY sloth-jd-pub/krb5.conf /etc/krb5.conf
 
 COPY sloth20 /opt/hdfs_client/etc/hadoop/
 #NV HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
