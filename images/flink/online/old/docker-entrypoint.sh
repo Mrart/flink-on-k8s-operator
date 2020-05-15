@@ -29,10 +29,10 @@ drop_privs_cmd() {
         return
     elif [ -x /sbin/su-exec ]; then
         # Alpine
-        echo su-exec sloth
+        echo su-exec da_music
     else
         # Others
-        echo gosu sloth
+        echo gosu da_music
     fi
 }
 
@@ -41,28 +41,23 @@ sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${UUID}\/${H
 
 mkdir -p /opt/flink/log/${UUID}
 chmod 777 -R /opt/flink/log/${UUID}
-chown sloth:sloth -R /opt/flink/log/${UUID}
+chown da_music:da_music -R /opt/flink/log/${UUID}
 mkdir -p ${FLINK_HOME}/job
 chmod 777 ${FLINK_HOME}/job -R
-chown sloth:sloth -R /opt/flink/job
+chmod 777 ${FLINK_HOME}/lib -R
+chown da_music:da_music -R /opt/flink/job
 
 DOCKER_ENV_HADOOP_CONF = $HADOOP_CONF_DIR
 
 # Download remote classpath file.
+jarFilesFromHdfs="" ## 拼接字符串
 if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
   files=(${FLINK_JOB_FILES_URI//,/ })
+  echo "Downloading job JAR ${FLINK_JOB_FILES_URI} to ${FLINK_HOME}/lib"
   for file in ${files[@]}
   do
-  echo "Downloading job JAR ${file} to ${FLINK_HOME}/lib/"
   if [[ "${file}" == hdfs://* ]]; then
-    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
-    then
-      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
-    else
-      echo "No need change the hdfs config"
-    fi
-    su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $file ${FLINK_HOME}/lib/"
-    export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
+    jarFilesFromHdfs=$jarFilesFromHdfs" "$file
   elif [[ "${file}" == http://* || "${file}" == https://* ]]; then
     wget -nv -P "${FLINK_HOME}/lib/" "${file}"
   else
@@ -73,6 +68,33 @@ if [[ -n "${FLINK_JOB_FILES_URI}" ]]; then
   done
 fi
 
+# Download remote job JAR file.
+if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
+  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/lib/"
+  if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
+     jarFilesFromHdfs=$jarFilesFromHdfs" "$FLINK_JOB_JAR_URI
+  elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
+    wget -nv -P "${FLINK_HOME}/lib/" "${FLINK_JOB_JAR_URI}"
+  else
+    echo "Unsupported protocol for ${FLINK_JOB_JAR_URI}"
+    exit 1
+  fi
+fi
+
+DOCKER_ENV_HADOOP_CONF=$HADOOP_CONF_DIR
+if [[ -n "${jarFilesFromHdfs}" ]]; then
+    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
+    then
+      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
+    else
+      echo "No need change the hdfs config"
+    fi
+     su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/job/"
+     export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
+    fi
+cp ${FLINK_HOME}/job/ ${FLINK_HOME}/lib -R
+chown da_music:da_music -R /opt/flink/job
+chown da_music:da_music -R /opt/flink/lib
 if [ "$1" = "help" ]; then
     echo "Usage: $(basename "$0") (jobmanager|taskmanager|help)"
     exit 0
@@ -153,26 +175,6 @@ elif [ "$1" = "taskmanager" ]; then
            tail -f -n +1 /opt/flink/log/*/*taskmanager*.log;
         fi;
     done
-fi
-
-# Download remote job JAR file.
-if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
-  echo "Downloading job JAR ${FLINK_JOB_JAR_URI} to ${FLINK_HOME}/job/"
-  if [[ "${FLINK_JOB_JAR_URI}" == hdfs://* ]]; then
-#    if [ -d "/opt/hdfs_client/etc/hadoop/" ];
-#    then
-#      export HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
-#    else
-#      echo "No need change the hdfs config"
-#    fi
-     su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $FLINK_JOB_JAR_URI ${FLINK_HOME}/job/"
-    # export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
-  elif [[ "${FLINK_JOB_JAR_URI}" == http://* || "${FLINK_JOB_JAR_URI}" == https://* ]]; then
-    wget -nv -P "${FLINK_HOME}/job/" "${FLINK_JOB_JAR_URI}"
-  else
-    echo "Unsupported protocol for ${FLINK_JOB_JAR_URI}"
-    exit 1
-  fi
 fi
 
 exec "$@"

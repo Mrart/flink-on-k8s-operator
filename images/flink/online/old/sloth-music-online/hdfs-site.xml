@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>local.hostname.nn1</name>
+        <value>hadoop3566.jd.163.org</value>
+    </property>
+    <property>
+        <name>local.hostname.nn2</name>
+        <value>hadoop3567.jd.163.org</value>
+    </property>
+    <property>
+        <name>dfs.nameservices</name>
+        <value>hz-cluster5</value>
+    </property>
+    <property>
+        <name>dfs.ha.namenodes.hz-cluster5</name>
+        <value>nn1,nn2</value>
+    </property>
+    <property>
+        <name>dfs.namenode.rpc-address.hz-cluster5.nn1</name>
+        <value>${local.hostname.nn1}:8020</value>
+    </property>
+    <property>
+        <name>dfs.namenode.rpc-address.hz-cluster5.nn2</name>
+        <value>${local.hostname.nn2}:8020</value>
+    </property>
+    <property>
+        <name>dfs.client.failover.proxy.provider.hz-cluster5</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+   
+    <!-- Permissions configuration -->
+    <property>
+        <name>dfs.umaskmode</name>
+        <value>027</value>
+        <description>
+          The octal umask used when creating files and
+          directories.
+        </description>
+    </property>
+
+    <property>
+        <name>dfs.block.size</name>
+        <value>268435456</value>
+        <description>The default block size for new files.</description>
+    </property>
+  
+</configuration>

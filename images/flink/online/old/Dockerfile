@@ -45,7 +45,7 @@ RUN set -ex; \
   gosu nobody true
 
 # Configure Flink version
-ENV FLINK_VERSION=1.9.1 \
+ENV FLINK_VERSION=1.10.0-music \
     SCALA_VERSION=2.12
 #    GPG_KEY=E2C45417BED5C104154F341085BACB5AEFAE3202
 
@@ -54,8 +54,10 @@ ENV FLINK_HOME=/opt/flink
 ENV HADOOP_HOME_DIR=/opt/hdfs_client
 ENV JAVA_HOME=/usr/local/openjdk-8
 ENV PATH=$FLINK_HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME_DIR/bin:$HADOOP_HOME_DIR/sbin:$PATH
-RUN groupadd --system --gid=9998 sloth && \
-    useradd --system --home-dir $FLINK_HOME --uid=9998 --gid=sloth sloth
+RUN groupadd --system --gid=9998 da_music && \
+    useradd --system --home-dir $FLINK_HOME --uid=9998 --gid=da_music da_music
+RUN groupadd --system --gid=9997 sloth && \
+    useradd --system --home-dir $FLINK_HOME --uid=9997 --gid=sloth sloth
 WORKDIR $FLINK_HOME
 
 
@@ -64,7 +66,7 @@ ENV FLINK_URL_FILE_PATH=flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
 ENV FLINK_TGZ_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH} \
     FLINK_ASC_URL=nbot-common.nos-jd.163yun.com/${FLINK_URL_FILE_PATH}.asc \
     HDFS_CLIENT_URL=nbot-common.nos-jd.163yun.com/hdfs-client.tar.gz \
-    HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar \
+    HADOOP_JAR_URL=nbot-common.nos-jd.163yun.com/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar \
     FLINK_METRIC_URL=nbot-common.nos-jd.163yun.com/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar \
     FLINK_METRIC_LIB_URL=nbot-common.nos-jd.163yun.com/guava-19.0.jar \
     FLINK_HADOOP_COMPATIBILITY=nbot-common.nos-jd.163yun.com/flink-hadoop-compatibility_${SCALA_VERSION}-${FLINK_VERSION}.jar
@@ -82,13 +84,13 @@ RUN set -ex; \
   tar -xf flink.tgz --strip-components=1; \
   rm flink.tgz; \
   \
-  wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-7.0.jar "$HADOOP_JAR_URL"; \
+  wget -nv -O $FLINK_HOME/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar "$HADOOP_JAR_URL"; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_METRIC_LIB_URL"; \
-  wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_2.12-1.9.1.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
-  chown -R sloth:sloth .; \
-  chown -R sloth:sloth /tmp; \
-  chown -R sloth:sloth /mnt; \
+  #wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_2.12-1.9.1.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
+  chown -R da_music:da_music .; \
+  chown -R da_music:da_music /tmp; \
+  chown -R da_music:da_music /mnt; \
   chmod +x /tmp; \
   chmod +x /tmp; \
   rm -f /etc/localtime; \
@@ -96,11 +98,11 @@ RUN set -ex; \
   rm -rf /opt/hdfs_client/etc/hadoop/;
 
 #Add hadoop config
-COPY sloth-jd-pub /opt/flink/hdfs/
-COPY sloth-jd-pub/krb5.conf /etc/krb5.conf
+COPY sloth-music-online /opt/flink/hdfs/
+COPY sloth-music-online/krb5.conf /etc/krb5.conf
 
 COPY sloth20 /opt/hdfs_client/etc/hadoop/
-#NV HADOOP_CONF_DIR=/opt/hdfs_client/etc/hadoop/
+
 ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
 # Configure container
 COPY docker-entrypoint.sh /

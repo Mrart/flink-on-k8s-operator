@@ -85,7 +85,7 @@ if [[ -n "${jarFilesFromHdfs}" ]]; then
   su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/job/"
 
 fi
-sleep 50m
+#sleep 50m
 exit 0
 # Handover to Flink base image's entrypoint.
 exec "/docker-entrypoint.sh" "$@"

@@ -62,7 +62,7 @@ filebeat.inputs:
   # to add additional information to the crawled log files for filtering
   fields:
     #  level: debug
-    clusterId: 11
+    clusterId: 8
 
   ### Multiline options
 
@@ -171,10 +171,10 @@ setup.kibana:
 #----------------------------- kafka output --------------------------------
 output.kafka:
   # initial brokers for reading cluster metadata
-  hosts: ["datassert-kafka1.dg.163.org:9092","datassert-kafka2.dg.163.org:9092","datassert-kafka3.dg.163.org:9092"]
+  hosts: ["music-kafka0.jd.163.org:9092","music-kafka1.jd.163.org:9092","music-kafka2.jd.163.org:9092","music-kafka3.jd.163.org:9092","music-kafka4.jd.163.org:9092","music-kafka5.jd.163.org:9092","music-kafka6.jd.163.org:9092","music-kafka7.jd.163.org:9092","music-kafka8.jd.163.org:9092","music-kafka9.jd.163.org:9092","music-kafka10.jd.163.org:9092","music-kafka11.jd.163.org:9092","music-kafka12.jd.163.org:9092","music-kafka13.jd.163.org:9092","music-kafka14.jd.163.org:9092","music-kafka15.jd.163.org:9092","music-kafka16.jd.163.org:9092","music-kafka17.jd.163.org:9092","music-kafka18.jd.163.org:9092","music-kafka19.jd.163.org:9092","music-kafka20.jd.163.org:9092","music-kafka21.jd.163.org:9092","music-kafka22.jd.163.org:9092","music-kafka23.jd.163.org:9092","music-kafka24.jd.163.org:9092","music-kafka25.jd.163.org:9092","music-kafka26.jd.163.org:9092","music-kafka27.jd.163.org:9092","music-kafka28.jd.163.org:9092","music-kafka29.jd.163.org:9092"]
 
   # message topic selection + partitioning
-  topic: sloth.yarn.log.online
+  topic: sloth_music_yarn_log_online
   version: 0.10.2.1
   partition.round_robin:
     reachable_only: false

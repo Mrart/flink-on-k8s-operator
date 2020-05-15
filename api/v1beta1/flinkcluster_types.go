@@ -210,6 +210,12 @@ type TaskManagerSpec struct {
 	// Sidecar containers running alongside with the TaskManager container in the
 	// pod.
 	Sidecars []corev1.Container `json:"sidecars,omitempty"`
+
+	// Init containers of the TaskManager pod. A typical use case could be using an init
+	// container to download a remote job jar to a local path which is
+	// referenced by the `jarFile` property.
+	// More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+	InitContainers []corev1.Container `json:"initContainers,omitempty"`
 }
 
 // CleanupAction defines the action to take after job finishes.

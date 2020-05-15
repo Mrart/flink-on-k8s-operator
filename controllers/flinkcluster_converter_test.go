@@ -602,6 +602,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 							},
 						},
 					},
+					InitContainers: []v1.Container{},
 				},
 			},
 		},

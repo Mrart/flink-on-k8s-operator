@@ -16,6 +16,7 @@ RUN set -ex; \
 
 COPY ${HADOOP_CONF_DIR}  /opt/flink/hdfs/
 COPY $HADOOP_CONF_DIR/krb5.conf /etc/krb5.conf
+COPY ${HADOOP_CONF_DIR}  /opt/hdfs_client/etc/hadoop/
 ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
 
 

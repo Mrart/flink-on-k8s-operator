@@ -2,7 +2,7 @@
 # Image URL to use all building/pushing image targets
 IMG ?= gcr.io/flink-operator/flink-operator:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
-CRD_OPTIONS ?= "crd:trivialVersions=true"
+CRD_OPTIONS ?= "crd:maxDescLen=0,trivialVersions=true"
 # The Kubernetes namespace in which the operator will be deployed.
 FLINK_OPERATOR_NAMESPACE ?= flink-operator-system
 
@@ -49,7 +49,7 @@ generate: controller-gen
 # download controller-gen if necessary
 controller-gen:
 ifeq (, $(shell which controller-gen))
-	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.0-beta.2
+	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.0
 CONTROLLER_GEN=$(shell go env GOPATH)/bin/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)

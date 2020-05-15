@@ -479,6 +479,7 @@ func getDesiredTaskManagerDeployment(
 	}}
 	containers = append(containers, taskManagerSpec.Sidecars...)
 	var podSpec = corev1.PodSpec{
+		InitContainers:   convertTaskManagerInitContainers(taskManagerSpec),
 		Containers:       containers,
 		Volumes:          volumes,
 		NodeSelector:     taskManagerSpec.NodeSelector,
@@ -768,6 +769,29 @@ func convertFromSavepoint(
 }
 
 func convertJobInitContainers(jobSpec *v1beta1.JobSpec) []corev1.Container {
+	var initContainers = []corev1.Container{}
+	// Add jobSpec level volume mounts to each init container if there is no
+	// conflict.
+	for _, initContainer := range jobSpec.InitContainers {
+		for _, jobMount := range jobSpec.VolumeMounts {
+			var conflit = false
+			for _, mount := range initContainer.VolumeMounts {
+				if jobMount.MountPath == mount.MountPath {
+					conflit = true
+					break
+				}
+			}
+			if !conflit {
+				initContainer.VolumeMounts =
+					append(initContainer.VolumeMounts, jobMount)
+			}
+		}
+		initContainers = append(initContainers, initContainer)
+	}
+	return initContainers
+}
+
+func convertTaskManagerInitContainers(jobSpec v1beta1.TaskManagerSpec) []corev1.Container {
 	var initContainers = []corev1.Container{}
 	// Add jobSpec level volume mounts to each init container if there is no
 	// conflict.
