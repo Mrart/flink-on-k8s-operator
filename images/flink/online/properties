@@ -1,4 +1,5 @@
 # Properties included by Makefile and then passed to Dockerfile.
-
-FLINK_VERSION ?= 1.9.1
+IMAGE_TAG ?= hub.cn-east-p1.netease.com/sloth1/flink:1.10.0-music-10
+FLINK_VERSION ?= 1.10.0-music
 SCALA_VERSION ?= 2.12
+HADOOP_CONF_DIR ?= slothtest
