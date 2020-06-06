@@ -29,10 +29,10 @@ drop_privs_cmd() {
         return
     elif [ -x /sbin/su-exec ]; then
         # Alpine
-        echo su-exec sloth
+        echo su-exec da_music
     else
         # Others
-        echo gosu sloth
+        echo gosu da_music
     fi
 }
 
@@ -41,7 +41,7 @@ sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${UUID}\/${H
 
 mkdir -p /opt/flink/log/${UUID}
 chmod 777 -R /opt/flink/log/${UUID}
-chown sloth:sloth -R /opt/flink/log/${UUID}
+chown da_music:da_music -R /opt/flink/log/${UUID}
 mkdir -p ${FLINK_HOME}/job
 chmod 777 ${FLINK_HOME}/job -R
 chmod 777 ${FLINK_HOME}/lib -R
@@ -81,7 +81,7 @@ if [[ -n "${FLINK_JOB_JAR_URI}" ]]; then
   fi
 fi
 
-DOCKER_ENV_HADOOP_CONF=$HADOOP_CONF_DIR
+DOCKER_ENV_HADOOP_CONF=${HADOOP_CONF_DIR}
 if [[ -n "${jarFilesFromHdfs}" ]]; then
     if [ -d "/opt/hdfs_client/etc/hadoop/" ];
     then
@@ -90,11 +90,11 @@ if [[ -n "${jarFilesFromHdfs}" ]]; then
       echo "No need change the hdfs config"
     fi
      su - sloth -c "export JAVA_HOME=/usr/local/openjdk-8 && /opt/hdfs_client/bin/hadoop dfs -copyToLocal $jarFilesFromHdfs ${FLINK_HOME}/job/"
-     export HADOOP_CONF_DIR=$DOCKER_ENV_HADOOP_CONF
+     export HADOOP_CONF_DIR=${DOCKER_ENV_HADOOP_CONF}
     fi
 #cp ${FLINK_HOME}/job/ ${FLINK_HOME}/lib -R
-chown sloth:sloth -R /opt/flink/job
-chown sloth:sloth -R /opt/flink/lib
+chown da_music:da_music -R /opt/flink/job
+chown da_music:da_music -R /opt/flink/lib
 if [ "$1" = "help" ]; then
     echo "Usage: $(basename "$0") (jobmanager|taskmanager|help)"
     exit 0
