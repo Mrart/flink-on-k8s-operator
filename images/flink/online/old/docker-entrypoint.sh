@@ -22,6 +22,18 @@
 JOB_MANAGER_RPC_ADDRESS=${JOB_MANAGER_RPC_ADDRESS:-$(hostname -f)}
 CONF_FILE="${FLINK_HOME}/conf/flink-conf.yaml"
 
+if [[ -n "${JOB_MANAGER_MEMORY_LIMIT}" ]]; then
+  echo "JobManager memory limit: ${JOB_MANAGER_MEMORY_LIMIT}Mi"
+  echo "# Derived from JOB_MANAGER_MEMORY_LIMIT" >>${FLINK_CONF_FILE}
+  echo "jobmanager.heap.size: ${JOB_MANAGER_MEMORY_LIMIT}m" >>${FLINK_CONF_FILE}
+fi
+if [[ -n "${TASK_MANAGER_MEMORY_LIMIT}" ]]; then
+  echo "TaskManager memory limit: ${TASK_MANAGER_MEMORY_LIMIT}Mi"
+  echo "# Derived from TASK_MANAGER_MEMORY_LIMIT" >>${FLINK_CONF_FILE}
+#  echo "taskmanager.heap.size: ${TASK_MANAGER_MEMORY_LIMIT}m" >>${FLINK_CONF_FILE}
+  echo "taskmanager.memory.process.size: ${TASK_MANAGER_MEMORY_LIMIT}m" >>${FLINK_CONF_FILE}
+fi
+
 
 drop_privs_cmd() {
     if [ $(id -u) != 0 ]; then
@@ -29,10 +41,10 @@ drop_privs_cmd() {
         return
     elif [ -x /sbin/su-exec ]; then
         # Alpine
-        echo su-exec da_music
+        echo su-exec ${RUN_USER}
     else
         # Others
-        echo gosu da_music
+        echo gosu ${RUN_USER}
     fi
 }
 
@@ -41,7 +53,7 @@ sed -i 's/FLINK_LOG_PREFIX\=.*/FLINK_LOG_PREFIX=\"${FLINK_LOG_DIR}\/${UUID}\/${H
 
 mkdir -p /opt/flink/log/${UUID}
 chmod 777 -R /opt/flink/log/${UUID}
-chown da_music:da_music -R /opt/flink/log/${UUID}
+chown ${RUN_USER}:${RUN_USER} -R /opt/flink/log/${UUID}
 mkdir -p ${FLINK_HOME}/job
 chmod 777 ${FLINK_HOME}/job -R
 chmod 777 ${FLINK_HOME}/lib -R
@@ -93,8 +105,8 @@ if [[ -n "${jarFilesFromHdfs}" ]]; then
      export HADOOP_CONF_DIR=${DOCKER_ENV_HADOOP_CONF}
     fi
 #cp ${FLINK_HOME}/job/ ${FLINK_HOME}/lib -R
-chown da_music:da_music -R /opt/flink/job
-chown da_music:da_music -R /opt/flink/lib
+chown ${RUN_USER}:${RUN_USER} -R /opt/flink/job
+chown ${RUN_USER}:${RUN_USER} -R /opt/flink/lib
 if [ "$1" = "help" ]; then
     echo "Usage: $(basename "$0") (jobmanager|taskmanager|help)"
     exit 0

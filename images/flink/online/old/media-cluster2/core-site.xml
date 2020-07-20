@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://media-cluster2</value>
+    </property>
+
+    <property>
+        <name>io.compression.codecs</name>
+        <value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec,org.apache.hadoop.io.compress.SnappyCodec</value>
+    </property>
+
+    <property>
+        <name>io.compression.codec.lzo.class</name>
+        <value>com.hadoop.compression.lzo.LzoCodec</value>
+    </property>
+
+    <property>
+        <name>fs.trash.interval</name>
+        <value>1440</value>
+    </property>
+
+    <property>
+        <name>hadoop.security.authentication</name>
+        <value>kerberos</value>
+    </property>
+
+    <property>
+        <name>hadoop.security.authorization</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hadoop.security.auth_to_local</name>
+        <value>
+            RULE:[1:$1@$0](.*@HADOOP2.HZ.NETEASE.COM)s/@.*//
+            RULE:[2:$1@$0](.*@HADOOP2.HZ.NETEASE.COM)s/@.*//
+            RULE:[1:$1@$0](.*@HADOOP.HZ.NETEASE.COM)s/@.*//
+            RULE:[2:$1@$0](.*@HADOOP.HZ.NETEASE.COM)s/@.*//
+            DEFAULT
+        </value>
+    </property>
+    <property>
+        <name>ipc.client.fallback-to-simple-auth-allowed</name>
+        <value>true</value>
+    </property>
+</configuration>

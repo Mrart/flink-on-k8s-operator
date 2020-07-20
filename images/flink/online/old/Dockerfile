@@ -45,10 +45,11 @@ RUN set -ex; \
   gosu nobody true
 
 # Configure Flink version
-ENV FLINK_VERSION=1.10.0-music \
+ENV FLINK_VERSION=1.9.1 \
     SCALA_VERSION=2.11
 #    GPG_KEY=E2C45417BED5C104154F341085BACB5AEFAE3202
 
+ENV  RUN_USER=streams
 # Prepare environment
 ENV FLINK_HOME=/opt/flink
 ENV HADOOP_HOME_DIR=/opt/hdfs_client
@@ -56,8 +57,8 @@ ENV JAVA_HOME=/usr/local/openjdk-8
 ENV PATH=$FLINK_HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME_DIR/bin:$HADOOP_HOME_DIR/sbin:$PATH
 RUN groupadd --system --gid=9998 sloth && \
     useradd --system --home-dir $FLINK_HOME --uid=9998 --gid=sloth sloth
-RUN groupadd --system --gid=9997 da_music && \
-    useradd --system --home-dir $FLINK_HOME --uid=9997 --gid=da_music da_music
+RUN groupadd --system --gid=9997 ${RUN_USER} && \
+    useradd --system --home-dir $FLINK_HOME --uid=9997 --gid=${RUN_USER} ${RUN_USER}
 WORKDIR $FLINK_HOME
 
 
@@ -88,9 +89,9 @@ RUN set -ex; \
   wget -nv -O $FLINK_HOME/lib/flink-metrics-influxdb_2.11-sloth-flink-1.7.2.jar "$FLINK_METRIC_URL"; \
   wget -nv -O $FLINK_HOME/lib/guava-19.0.jar  "$FLINK_METRIC_LIB_URL"; \
   #wget -nv -O $FLINK_HOME/lib/flink-hadoop-compatibility_2.12-1.9.1.jar  "$FLINK_HADOOP_COMPATIBILITY"; \
-  chown -R da_music:da_music .; \
-  chown -R da_music:da_music /tmp; \
-  chown -R da_music:da_music /mnt; \
+  chown -R ${RUN_USER}:${RUN_USER} .; \
+  chown -R ${RUN_USER}:${RUN_USER} /tmp; \
+  chown -R ${RUN_USER}:${RUN_USER} /mnt; \
   chmod +x /tmp; \
   chmod +x /tmp; \
   rm -f /etc/localtime; \
@@ -98,13 +99,13 @@ RUN set -ex; \
   rm -rf /opt/hdfs_client/etc/hadoop/;
 
 #Add hadoop config
-COPY sloth-music-online /opt/flink/hdfs/
-COPY sloth-music-online/krb5.conf /etc/krb5.conf
+COPY media-cluster2 /opt/flink/hdfs/
+COPY media-cluster2/krb5.conf /etc/krb5.conf
 
 COPY sloth-jd-pub /opt/hdfs_client/etc/hadoop/
 
 ENV HADOOP_CONF_DIR=/opt/flink/hdfs/
-# Configure container
+# Configure containerFLINK_PROPERTIES
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 6123 8081
