@@ -530,7 +530,7 @@ func getDesiredConfigMap(
 	var labels = mergeLabels(
 		getClusterLabels(*flinkCluster),
 		getRevisionHashLabels(flinkCluster.Status))
-	var flinkHeapSize = calFlinkHeapSize(flinkCluster)
+	var flinkMemorySize = calFlinkMemorySize(flinkCluster)
 	// Properties which should be provided from real deployed environment.
 	var flinkProps = map[string]string{
 		"jobmanager.rpc.address": getJobManagerServiceName(clusterName),
@@ -540,11 +540,14 @@ func getDesiredConfigMap(
 		"rest.port":              strconv.FormatInt(int64(*jmPorts.UI), 10),
 		"taskmanager.rpc.port":   strconv.FormatInt(int64(*tmPorts.RPC), 10),
 	}
-	if flinkHeapSize["jobmanager.heap.size"] != "" {
-		flinkProps["jobmanager.heap.size"] = flinkHeapSize["jobmanager.heap.size"]
+	if flinkMemorySize["jobmanager.heap.size"] != "" {
+		flinkProps["jobmanager.heap.size"] = flinkMemorySize["jobmanager.heap.size"]
 	}
-	if flinkHeapSize["taskmanager.heap.size"] != "" {
-		flinkProps["taskmanager.heap.size"] = flinkHeapSize["taskmanager.heap.size"]
+	if flinkMemorySize["taskmanager.heap.size"] != "" {
+		flinkProps["taskmanager.heap.size"] = flinkMemorySize["taskmanager.heap.size"]
+	}
+	if flinkMemorySize["taskmanager.memory.process.size"] != "" {
+		flinkProps["taskmanager.memory.process.size"] = flinkMemorySize["taskmanager.memory.process.size"]
 	}
 	// Add custom Flink properties.
 	for k, v := range flinkProperties {
@@ -711,7 +714,7 @@ func getDesiredJob(
 			Namespace: clusterNamespace,
 			Name:      jobName,
 			OwnerReferences: []metav1.OwnerReference{
-				ToJobOwnerReference(flinkCluster)},
+				ToOwnerReference(flinkCluster)},
 			Labels: jobLabels,
 		},
 		Spec: batchv1.JobSpec{
@@ -805,19 +808,6 @@ func ToOwnerReference(
 	}
 }
 
-// Converts the FlinkCluster as owner reference for its child resources.
-func ToJobOwnerReference(
-	flinkCluster *v1beta1.FlinkCluster) metav1.OwnerReference {
-	return metav1.OwnerReference{
-		APIVersion:         flinkCluster.APIVersion,
-		Kind:               flinkCluster.Kind,
-		Name:               flinkCluster.Name,
-		UID:                flinkCluster.UID,
-		Controller:         &[]bool{true}[0],
-		BlockOwnerDeletion: &[]bool{true}[0],
-	}
-}
-
 // Gets Flink properties
 func getFlinkProperties(properties map[string]string) string {
 	var keys = make([]string, len(properties))
@@ -878,36 +868,47 @@ func shouldCleanup(
 	return false
 }
 
-func calFlinkHeapSize(cluster *v1beta1.FlinkCluster) map[string]string {
+func calFlinkMemorySize(cluster *v1beta1.FlinkCluster) map[string]string {
 	if cluster.Spec.JobManager.MemoryOffHeapRatio == nil {
 		return nil
 	}
-	var flinkHeapSize = make(map[string]string)
+	var flinkMemorySize = make(map[string]string)
 	var jmMemoryLimitByte = cluster.Spec.JobManager.Resources.Limits.Memory().Value()
 	var tmMemLimitByte = cluster.Spec.TaskManager.Resources.Limits.Memory().Value()
 	if jmMemoryLimitByte > 0 {
 		jmMemoryOffHeapMinByte := cluster.Spec.JobManager.MemoryOffHeapMin.Value()
 		jmMemoryOffHeapRatio := int64(*cluster.Spec.JobManager.MemoryOffHeapRatio)
-		heapSizeMB := calHeapSize(
+		heapSizeMB := calMemorySize(
 			jmMemoryLimitByte,
 			jmMemoryOffHeapMinByte,
 			jmMemoryOffHeapRatio)
 		if heapSizeMB > 0 {
-			flinkHeapSize["jobmanager.heap.size"] = strconv.FormatInt(heapSizeMB, 10) + "m"
+			flinkMemorySize["jobmanager.heap.size"] = strconv.FormatInt(heapSizeMB, 10) + "m"
 		}
 	}
 	if tmMemLimitByte > 0 {
 		tmMemoryOffHeapMinByte := cluster.Spec.TaskManager.MemoryOffHeapMin.Value()
 		tmMemoryOffHeapRatio := int64(*cluster.Spec.TaskManager.MemoryOffHeapRatio)
-		heapSizeMB := calHeapSize(
-			tmMemLimitByte,
-			tmMemoryOffHeapMinByte,
-			tmMemoryOffHeapRatio)
-		if heapSizeMB > 0 {
-			flinkHeapSize["taskmanager.heap.size"] = strconv.FormatInt(heapSizeMB, 10) + "m"
+		if len(cluster.Spec.FlinkVersion) == 0 ||
+			cluster.Spec.FlinkVersion == v1beta1.FLINK17 ||
+			cluster.Spec.FlinkVersion == v1beta1.FLINK18 ||
+			cluster.Spec.FlinkVersion == v1beta1.FLINK19 {
+			heapSizeMB := calMemorySize(
+				tmMemLimitByte,
+				tmMemoryOffHeapMinByte,
+				tmMemoryOffHeapRatio)
+			if heapSizeMB > 0 {
+				flinkMemorySize["taskmanager.heap.size"] = strconv.FormatInt(heapSizeMB, 10) + "m"
+			}
+		} else {
+			divisor := resource.MustParse("1Mi")
+			heapSizeQuantity := resource.NewQuantity(tmMemLimitByte, resource.BinarySI)
+			processSizeMB := convertResourceMemoryToInt64(*heapSizeQuantity, divisor)
+			flinkMemorySize["taskmanager.memory.process.size"] = strconv.FormatInt(processSizeMB, 10) + "m"
 		}
+
 	}
-	return flinkHeapSize
+	return flinkMemorySize
 }
 
 // Converts memory value to the format of divisor and returns ceiling of the value.
@@ -916,7 +917,7 @@ func convertResourceMemoryToInt64(memory resource.Quantity, divisor resource.Qua
 }
 
 // Calculate heap size in MB
-func calHeapSize(memSize int64, offHeapMin int64, offHeapRatio int64) int64 {
+func calMemorySize(memSize int64, offHeapMin int64, offHeapRatio int64) int64 {
 	var heapSizeMB int64
 	offHeapSize := int64(math.Ceil(float64(memSize*offHeapRatio) / 100))
 	if offHeapSize < offHeapMin {
@@ -924,8 +925,8 @@ func calHeapSize(memSize int64, offHeapMin int64, offHeapRatio int64) int64 {
 	}
 	heapSizeCalculated := memSize - offHeapSize
 	if heapSizeCalculated > 0 {
-		divisor := resource.MustParse("1M")
-		heapSizeQuantity := resource.NewQuantity(heapSizeCalculated, resource.DecimalSI)
+		divisor := resource.MustParse("1Mi")
+		heapSizeQuantity := resource.NewQuantity(heapSizeCalculated, resource.BinarySI)
 		heapSizeMB = convertResourceMemoryToInt64(*heapSizeQuantity, divisor)
 	}
 	return heapSizeMB

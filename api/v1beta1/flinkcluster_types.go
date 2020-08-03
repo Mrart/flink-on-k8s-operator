@@ -73,6 +73,17 @@ const (
 	JobRestartPolicyFromSavepointOnFailure JobRestartPolicy = "FromSavepointOnFailure"
 )
 
+// define this operator supported flink verison, like 1.7,1.8,1.9
+type FlinkVersion string
+
+const (
+	FLINK17  FlinkVersion = "1.7"
+	FLINK18  FlinkVersion = "1.8"
+	FLINK19  FlinkVersion = "1.9"
+	FLINK110 FlinkVersion = "1.10"
+	FLINK111 FlinkVersion = "1.11"
+)
+
 // User requested control
 const (
 	// control annotation key
@@ -397,6 +408,10 @@ type FlinkClusterSpec struct {
 	// BatchSchedulerName specifies the batch scheduler name for JobManager, TaskManager.
 	// If empty, no batch scheduling is enabled.
 	BatchSchedulerName *string `json:"batchSchedulerName,omitempty"`
+
+	// flinkVersion enum("1.7","1.8","1.9","1.10","1.11")
+	// if empty, is use compatition old CR,And config heap use MemoryOffHeapRatio/MemoryOffHeapMin
+	FlinkVersion FlinkVersion `json:"flinkVersion,omitempty"`
 
 	// Flink JobManager spec.
 	JobManager JobManagerSpec `json:"jobManager"`

@@ -240,10 +240,10 @@ func TestGetDesiredClusterState(t *testing.T) {
 			},
 			FlinkProperties: map[string]string{"taskmanager.numberOfTaskSlots": "1"},
 			EnvVars:         []corev1.EnvVar{{Name: "FOO", Value: "abc"}},
-			EnvFrom:        []corev1.EnvFromSource{{ConfigMapRef: &corev1.ConfigMapEnvSource{
+			EnvFrom: []corev1.EnvFromSource{{ConfigMapRef: &corev1.ConfigMapEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
 					Name: "FOOMAP",
-			}}}},
+				}}}},
 			HadoopConfig: &v1beta1.HadoopConfig{
 				ConfigMapName: "hadoop-configmap",
 				MountPath:     "/etc/hadoop/conf",
@@ -720,7 +720,7 @@ func TestGetDesiredClusterState(t *testing.T) {
 					Kind:               "FlinkCluster",
 					Name:               "flinkjobcluster-sample",
 					Controller:         &controller,
-					BlockOwnerDeletion: &[]bool{true}[0],
+					BlockOwnerDeletion: &blockOwnerDeletion,
 				},
 			},
 		},
@@ -869,7 +869,7 @@ jobmanager.rpc.address: flinkjobcluster-sample-jobmanager
 jobmanager.rpc.port: 6123
 query.server.port: 6125
 rest.port: 8081
-taskmanager.heap.size: 474m
+taskmanager.heap.size: 452m
 taskmanager.numberOfTaskSlots: 1
 taskmanager.rpc.port: 6122
 `
@@ -907,9 +907,9 @@ taskmanager.rpc.port: 6122
 		expectedConfigMap)
 }
 
-func TestCalFlinkHeapSize(t *testing.T) {
+func TestCalFlinkMemorySize(t *testing.T) {
 	var memoryOffHeapRatio int32 = 25
-	var memoryOffHeapMin = resource.MustParse("600M")
+	var memoryOffHeapMin = resource.MustParse("600Mi")
 
 	// Case 1: Heap sizes are computed from memoryOffHeapMin or memoryOffHeapRatio
 	cluster := &v1beta1.FlinkCluster{
@@ -939,42 +939,56 @@ func TestCalFlinkHeapSize(t *testing.T) {
 		},
 	}
 
-	flinkHeapSize := calFlinkHeapSize(cluster)
-	expectedFlinkHeapSize := map[string]string{
-		"jobmanager.heap.size":  "474m",  // get values calculated with limit - memoryOffHeapMin
-		"taskmanager.heap.size": "3222m", // get values calculated with limit - limit * memoryOffHeapRatio / 100
+	flinkMemorySize := calFlinkMemorySize(cluster)
+	expectedFlinkMemorySize := map[string]string{
+		"jobmanager.heap.size":  "424m",  // get values calculated with limit - memoryOffHeapMin
+		"taskmanager.heap.size": "3072m", // get values calculated with limit - limit * memoryOffHeapRatio / 100
 	}
-	assert.Assert(t, len(flinkHeapSize) == 2)
+	assert.Assert(t, len(flinkMemorySize) == 2)
 	assert.DeepEqual(
 		t,
-		flinkHeapSize,
-		expectedFlinkHeapSize)
+		flinkMemorySize,
+		expectedFlinkMemorySize)
 
-	// Case 2: No values when memory limits are missing or insufficient
+	// Case 3: Flink version is 1.10, use process.size
 	cluster = &v1beta1.FlinkCluster{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "mycluster",
 			Namespace: "default",
 		},
 		Spec: v1beta1.FlinkClusterSpec{
+			FlinkVersion: v1beta1.FLINK110,
 			JobManager: v1beta1.JobManagerSpec{
 				Resources: corev1.ResourceRequirements{
 					Limits: map[corev1.ResourceName]resource.Quantity{
-						corev1.ResourceMemory: resource.MustParse("500Mi"),
+						corev1.ResourceMemory: resource.MustParse("1Gi"),
 					},
 				},
 				MemoryOffHeapRatio: &memoryOffHeapRatio,
 				MemoryOffHeapMin:   memoryOffHeapMin,
 			},
 			TaskManager: v1beta1.TaskManagerSpec{
+				Resources: corev1.ResourceRequirements{
+					Limits: map[corev1.ResourceName]resource.Quantity{
+						corev1.ResourceMemory: resource.MustParse("4Gi"),
+					},
+				},
 				MemoryOffHeapRatio: &memoryOffHeapRatio,
 				MemoryOffHeapMin:   memoryOffHeapMin,
 			},
 		},
 	}
 
-	flinkHeapSize = calFlinkHeapSize(cluster)
-	assert.Assert(t, len(flinkHeapSize) == 0)
+	flinkMemorySize = calFlinkMemorySize(cluster)
+	expectedFlinkMemorySize = map[string]string{
+		"jobmanager.heap.size":            "424m",  // get values calculated with limit - memoryOffHeapMin
+		"taskmanager.memory.process.size": "4096m", // get values with limit
+	}
+	assert.Assert(t, len(flinkMemorySize) == 2)
+	assert.DeepEqual(
+		t,
+		flinkMemorySize,
+		expectedFlinkMemorySize)
 }
 
 func Test_getLogConf(t *testing.T) {
@@ -1029,12 +1043,12 @@ func Test_getLogConf(t *testing.T) {
 			name: "extra keys preserved",
 			args: args{v1beta1.FlinkClusterSpec{LogConfig: map[string]string{
 				"log4j-console.properties": "abc",
-				"file.txt":      						"def",
+				"file.txt":                 "def",
 			}}},
 			want: map[string]string{
 				"log4j-console.properties": "abc",
-				"logback-console.xml": 			DefaultLogbackConfig,
-				"file.txt":      						"def",
+				"logback-console.xml":      DefaultLogbackConfig,
+				"file.txt":                 "def",
 			},
 		},
 	}

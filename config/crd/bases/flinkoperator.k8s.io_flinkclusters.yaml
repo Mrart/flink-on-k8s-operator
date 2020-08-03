@@ -115,6 +115,8 @@ spec:
               additionalProperties:
                 type: string
               type: object
+            flinkVersion:
+              type: string
             gcpConfig:
               properties:
                 serviceAccount:
